@@ -1,7 +1,9 @@
 ## Interface: 16001
 ## Title: Roar Forever
-## Notes: Restores the original player-character /roar voice sounds locally in World of Warcraft: Forever.
+## Notes: Restores original /roar voice sounds and adds configurable ability-triggered emotes in World of Warcraft: Forever.
 ## Author: Morkahja
-## Version: 0.1.0
+## Version: 0.2.0
+## SavedVariablesPerCharacter: RoarForeverDB
 
 RoarForever.lua
+RoarForever_ActionEmotes.lua
