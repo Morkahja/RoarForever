@@ -1,14 +1,28 @@
-local addonName = ...
-
 local frame = CreateFrame("Frame")
 
 local ROAR_COOLDOWN = 0.30
 local lastRoarTimeBySender = {}
 
 -- Blizzard FileDataIDs for the original player-character /roar voice lines.
--- Add entries only after the FileDataID has been verified in the Forever client.
+-- These mappings are verified against the current wowdev community listfile.
+-- GnomeFemale (540457) has also been confirmed to play in the WoW Forever beta client.
 local roarSounds = {
-    GnomeFemale = 540457, -- verified in Forever beta
+    DwarfFemale = 539992,
+    DwarfMale = 540087,
+    GnomeFemale = 540457,
+    GnomeMale = 540497,
+    HumanFemale = 540615,
+    HumanMale = 540697,
+    NightElfFemale = 541072,
+    NightElfMale = 541132,
+    OrcFemale = 541347,
+    OrcMale = 541398,
+    TaurenFemale = 543016,
+    TaurenMale = 543062,
+    TrollFemale = 543226,
+    TrollMale = 543311,
+    UndeadFemale = 542680,
+    UndeadMale = 542740,
 }
 
 local function NormalizeName(name)
@@ -82,9 +96,19 @@ local function IsRoarText(text)
         return false
     end
 
-    -- First Forever beta version mirrors the old ROARSounds addon's text check.
-    -- This currently assumes an English emote message.
-    return string.find(string.lower(text), "roar", 1, true) ~= nil
+    text = string.lower(text)
+
+    -- Mirrors the original ROARSounds addon's detection while avoiding
+    -- unrelated words that merely contain the letters "roar".
+    if string.find(text, " roars", 1, true) then
+        return true
+    end
+
+    if string.find(text, " roar", 1, true) then
+        return true
+    end
+
+    return false
 end
 
 local function FindUnitBySender(sender)
@@ -134,11 +158,14 @@ local function CanPlayForSender(sender, guid)
 end
 
 local function GetSenderRoarKey(sender, guid)
+    -- Modern clients expose the sender GUID as argument 12 of CHAT_MSG_TEXT_EMOTE.
+    -- This lets us resolve race/sex even when the sender is not a party unit.
     local roarKey = GetRoarKeyForGUID(guid)
     if roarKey then
         return roarKey
     end
 
+    -- Fallback retains the unit lookup behavior of the original addon.
     local unit = FindUnitBySender(sender)
     if unit then
         return GetRoarKeyForUnit(unit)
@@ -186,7 +213,7 @@ SlashCmdList.ROARFOREVER = function(msg)
         end
 
         if not fileDataID then
-            print("Roar Forever: no verified FileDataID mapped yet for " .. roarKey .. ".")
+            print("Roar Forever: no FileDataID mapped for " .. roarKey .. ".")
             return
         end
 
