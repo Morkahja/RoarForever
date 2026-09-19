@@ -6,18 +6,9 @@ local ROAR_COOLDOWN = 0.30
 local lastRoarTimeBySender = {}
 
 -- Blizzard FileDataIDs for the original player-character /roar voice lines.
--- Entries are added only when the underlying ID has been identified with confidence.
+-- Add entries only after the FileDataID has been verified in the Forever client.
 local roarSounds = {
-    DwarfFemale = 539992,
-    DwarfMale = 540087,
-    GnomeFemale = 540457,
-    GnomeMale = 540497,
-    HumanMale = 540697,
-    OrcFemale = 541347,
-    OrcMale = 541398,
-    TaurenFemale = 543016,
-    TaurenMale = 543062,
-    TrollFemale = 543226,
+    GnomeFemale = 540457, -- verified in Forever beta
 }
 
 local function NormalizeName(name)
@@ -91,9 +82,8 @@ local function IsRoarText(text)
         return false
     end
 
-    -- CHAT_MSG_TEXT_EMOTE does not expose the emote token itself, so the first
-    -- beta version mirrors the original addon's text check. This is reliable
-    -- on the English client and can be localized later.
+    -- First Forever beta version mirrors the old ROARSounds addon's text check.
+    -- This currently assumes an English emote message.
     return string.find(string.lower(text), "roar", 1, true) ~= nil
 end
 
@@ -196,7 +186,7 @@ SlashCmdList.ROARFOREVER = function(msg)
         end
 
         if not fileDataID then
-            print("Roar Forever: no FileDataID mapped yet for " .. roarKey .. ".")
+            print("Roar Forever: no verified FileDataID mapped yet for " .. roarKey .. ".")
             return
         end
 
