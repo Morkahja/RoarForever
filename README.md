@@ -1,22 +1,37 @@
 # Roar Forever
 
-Restores the original player-character `/roar` voice sounds locally in World of Warcraft: Forever by listening for text-emote events and playing Blizzard's original audio via FileDataID.
+Roar Forever restores the original player-character `/roar` voice sounds locally in World of Warcraft: Forever and adds an optional ability-triggered emote system.
 
-This is a Forever port of the earlier `ROARSounds` addon.
+This is a Forever port and expansion of the earlier `ROARSounds` / RoarGuild ideas.
 
 ## Forever compatibility
 
 - Forever Interface number: `16001`
-- Uses `CHAT_MSG_TEXT_EMOTE`
-- Uses the sender GUID when available to resolve race and sex
-- Falls back to player/target/mouseover/focus/party/raid unit matching
+- Uses `CHAT_MSG_TEXT_EMOTE` for roar sound restoration
+- Uses `UNIT_SPELLCAST_SUCCEEDED` for ability-triggered emotes
 - Uses Blizzard's internal FileDataIDs, so no copied audio files are bundled
-- Plays through the `Master` sound channel
-- Keeps the original addon's 0.30-second duplicate guard
+- Per-character action-emote configuration through `RoarForeverDB`
+
+## Ability emotes
+
+Open the configuration with:
+
+`/rf`
+
+The Blizzard-style configuration window provides:
+
+- master enable/disable toggle for ability emotes
+- ability dropdown populated from the character's known active abilities
+- one saved configuration instance per selected ability
+- checklist of the client's available emote tokens
+- random selection from the checked emotes
+- chance slider from 0-100%
+- cooldown slider from 0-120 seconds
+- remove button for configured abilities
+
+When an assigned ability succeeds, Roar Forever checks its chance and cooldown, chooses one enabled emote at random, and executes it with `DoEmote`. If the selected emote is `/roar`, the roar-sound system then plays that character's original racial roar voice.
 
 ## Original roar FileDataIDs
-
-The following mappings were resolved from the current `wowdev/wow-listfile` sound list:
 
 | Character | FileDataID |
 |---|---:|
@@ -37,18 +52,19 @@ The following mappings were resolved from the current `wowdev/wow-listfile` soun
 | Undead Female | `542680` |
 | Undead Male | `542740` |
 
-`540457` (`VO_PCGnomeFemaleRoar01.ogg`) has been directly confirmed to play in the WoW Forever beta client. The remaining IDs are verified filename-to-FileDataID mappings and are now ready for in-client testing.
+`540457` (`VO_PCGnomeFemaleRoar01.ogg`) has been directly confirmed to play in the WoW Forever beta client. The remaining mappings come from the current `wowdev/wow-listfile` sound list.
 
 ## Commands
 
-- `/rf test` or `/roarforever test` plays the mapped roar for your current character.
-- `/rf status` prints the detected race/sex key and mapped FileDataID.
-- `/rf id 540457` directly tests any FileDataID.
+- `/rf` or `/rf config` opens the configuration window.
+- `/rf test` plays the mapped roar for your current character.
+- `/rf status` prints roar and ability-emote status.
+- `/rf id 540457` directly tests a FileDataID.
 
 ## Installation
 
-Place the repository contents in:
+Place the `RoarForever` folder in the Forever client's `Interface/AddOns/` directory. It must contain:
 
-`World of Warcraft/_classic_era_/Interface/AddOns/RoarForever/`
-
-The `RoarForever` folder should contain both `RoarForever.toc` and `RoarForever.lua`.
+- `RoarForever.toc`
+- `RoarForever.lua`
+- `RoarForever_ActionEmotes.lua`
