@@ -98,8 +98,6 @@ local function IsRoarText(text)
 
     text = string.lower(text)
 
-    -- Mirrors the original ROARSounds addon's detection while avoiding
-    -- unrelated words that merely contain the letters "roar".
     if string.find(text, " roars", 1, true) then
         return true
     end
@@ -158,14 +156,11 @@ local function CanPlayForSender(sender, guid)
 end
 
 local function GetSenderRoarKey(sender, guid)
-    -- Modern clients expose the sender GUID as argument 12 of CHAT_MSG_TEXT_EMOTE.
-    -- This lets us resolve race/sex even when the sender is not a party unit.
     local roarKey = GetRoarKeyForGUID(guid)
     if roarKey then
         return roarKey
     end
 
-    -- Fallback retains the unit lookup behavior of the original addon.
     local unit = FindUnitBySender(sender)
     if unit then
         return GetRoarKeyForUnit(unit)
@@ -203,7 +198,16 @@ SLASH_ROARFOREVER2 = "/rf"
 SlashCmdList.ROARFOREVER = function(msg)
     msg = string.lower((msg or ""):match("^%s*(.-)%s*$"))
 
-    if msg == "test" or msg == "" then
+    if msg == "" or msg == "config" or msg == "ui" then
+        if RoarForever_OpenConfig then
+            RoarForever_OpenConfig()
+        else
+            print("Roar Forever: configuration UI is unavailable.")
+        end
+        return
+    end
+
+    if msg == "test" then
         local roarKey = GetRoarKeyForUnit("player")
         local fileDataID = roarKey and roarSounds[roarKey]
 
@@ -226,6 +230,11 @@ SlashCmdList.ROARFOREVER = function(msg)
         local roarKey = GetRoarKeyForUnit("player") or "unknown"
         local fileDataID = roarSounds[roarKey]
         print("Roar Forever: detected " .. roarKey .. ", FileDataID " .. (fileDataID or "not mapped"))
+
+        if RoarForever_ActionStatus then
+            local enabled, count = RoarForever_ActionStatus()
+            print("Roar Forever: ability emotes " .. (enabled and "enabled" or "disabled") .. ", " .. tostring(count) .. " configured abilities")
+        end
         return
     end
 
@@ -237,5 +246,5 @@ SlashCmdList.ROARFOREVER = function(msg)
         return
     end
 
-    print("Roar Forever: /rf test | /rf status | /rf id <FileDataID>")
+    print("Roar Forever: /rf | /rf test | /rf status | /rf id <FileDataID>")
 end
