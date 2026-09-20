@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $entries = @(Get-Content -LiteralPath (Join-Path $PSScriptRoot 'RoarForever.toc') |
     ForEach-Object { $_.Trim() } |
     Where-Object { $_ -and -not $_.StartsWith('#') })
-$files = @('RoarForever.toc', 'README.md', 'CHANGELOG.md') + $entries
+$files = @('RoarForever.toc') + $entries
 foreach ($file in $files) {
     if ($file -notmatch '^[A-Za-z0-9_.-]+$') { throw "Unexpected addon filename: $file" }
     if (-not (Test-Path -LiteralPath (Join-Path $PSScriptRoot $file) -PathType Leaf)) {
@@ -42,5 +42,14 @@ foreach ($file in $files) {
         throw "Installed file verification failed: $file. Backup: $backup"
     }
     Write-Output "Verified: $file"
+}
+# Remove only documentation previously installed by this script. Never recurse
+# into the SavedVariables junction or remove unknown user files.
+foreach ($file in @('README.md', 'CHANGELOG.md')) {
+    $installed = Join-Path $target $file
+    if (Test-Path -LiteralPath $installed -PathType Leaf) {
+        Copy-Item -LiteralPath $installed -Destination (Join-Path $backup $file)
+        Remove-Item -LiteralPath $installed
+    }
 }
 Write-Output 'Installation verified. In WoW, run /reload, /rf status, then /rf.'

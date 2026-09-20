@@ -73,6 +73,8 @@ Place the `RoarForever` folder in the Forever client's `Interface/AddOns/` direc
 
 Copy all five files together. Preserve an existing configured `RoarForever_Recovery.xml` when updating; the installer does this automatically.
 
+The installed addon and runtime ZIP contain only these five files. Documentation, release notes, setup scripts, and tests stay in the repository. A configured local installation also contains the `SavedVariables` junction required by the beta recovery workaround; keep it in place and never include it in a ZIP.
+
 On Windows, run `./Install-Local.ps1` from a complete checkout to install into the default Forever beta addon directory. Use `-Destination 'D:\Games\World of Warcraft\_classic_beta_\Interface\AddOns\RoarForever'` for another installation.
 
 After installation, type `/reload`, then `/rf status` and `/rf`.
