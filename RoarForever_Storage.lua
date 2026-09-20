@@ -4,7 +4,14 @@
 
 local function EnsureRoot()
     if type(RoarForeverStorage) ~= "table" then
-        RoarForeverStorage = {}
+        -- The optional local recovery addon reads our saved file through its
+        -- TOC before this addon loads. Keep that reference even if the client's
+        -- broken SavedVariables pass clears the normal global afterward.
+        if type(RoarForever_RecoveryStorage) == "table" then
+            RoarForeverStorage = RoarForever_RecoveryStorage
+        else
+            RoarForeverStorage = {}
+        end
     end
 
     if type(RoarForeverStorage.profiles) ~= "table" then
@@ -61,6 +68,17 @@ local function BindCharacterDB()
 end
 
 RoarForever_BindCharacterDB = BindCharacterDB
+
+function RoarForever_StorageStatus()
+    local _, guid = BindCharacterDB()
+    if not guid then
+        return "character profile unavailable"
+    end
+    if RoarForever_RecoveryReady then
+        return "local recovery loaded; profile " .. guid
+    end
+    return "standard client saving; profile " .. guid .. " (Forever beta may fail to restore settings)"
+end
 
 local storageFrame = CreateFrame("Frame")
 storageFrame:RegisterEvent("PLAYER_LOGIN")

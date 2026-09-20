@@ -75,3 +75,23 @@ On Windows, run `./Install-Local.ps1` from a complete checkout to install into t
 After installation, type `/reload`, then `/rf status` and `/rf`.
 
 Settings are saved per character in `RoarForeverStorage.profiles`, keyed by character GUID.
+
+## Forever beta settings recovery (Windows)
+
+Current Forever beta builds have reports of saved settings being written to disk but not restored on login/restart. Changing between account-wide and per-character variables does not resolve that client defect. See the [reproduction on Blizzard's forum](https://eu.forums.blizzard.com/en/wow/t/addon-savedvariables-never-load-on-160169893/629799).
+
+Version 0.2.3 supports an optional local companion, `RoarForever_Recovery`. With WoW closed, back up your account-wide `WTF/Account/<account>/SavedVariables/RoarForever.lua`, install the addon, then run:
+
+```powershell
+./Enable-LocalRecovery.ps1 -SavedVariablesFile 'C:\Program Files (x86)\World of Warcraft\_classic_beta_\WTF\Account\<account>\SavedVariables\RoarForever.lua'
+```
+
+Use `-AddonDirectory` for a non-default addon location. Select the account you actually play; rerun setup only for the same target, or use a separate installation for another account. Do not publish the generated companion folder: its junction points to private local saved data.
+
+The script creates a directory junction inside the companion pointing to the existing SavedVariables directory. Its TOC loads only `RoarForever.lua`, and captures the table before the main addon loads. RoarForever uses this table if the normal client restore fails. This reads the live saved file on each load, so future edits and removals are not replaced with a frozen snapshot. The script does not overwrite settings or run a background service. Main-addon updates preserve the companion. WoW must still write the settings on a normal logout/reload; this does not protect unsaved changes from crashes.
+
+Fully restart WoW after first setup and enable **Roar Forever - Local Recovery** in the addon list. `/rf status` should say `local recovery loaded`. Change a setting, log out and in, then fully exit/restart and check it again. If the recovery message is absent, the workaround is not active; check the companion is enabled and the junction still exists. Client acceptance of this loading path must be verified in-game.
+
+To stop using the workaround once the client is fixed, disable the companion in the addon list. Do not recursively delete its `SavedVariables` junction or files through it: they are your actual saved settings.
+
+Run `lua tests/persistence.lua` with Lua 5.1 from the checkout to reproduce the failed restore and test the recovery logic across isolated simulated sessions. These tests do not replace a real client restart test.

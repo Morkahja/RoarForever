@@ -19,6 +19,11 @@ local function AbilityKey(name)
 end
 
 local function EnsureDB()
+    -- Rebind on access as well as login, so an early event cannot leave UI
+    -- edits in a session-only table when the character GUID becomes available.
+    if RoarForever_BindCharacterDB then
+        RoarForever_BindCharacterDB()
+    end
     if type(RoarForeverDB) ~= "table" then
         RoarForeverDB = {}
     end

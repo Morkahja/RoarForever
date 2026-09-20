@@ -227,6 +227,9 @@ SlashCmdList.ROARFOREVER = function(msg)
     end
 
     if msg == "status" then
+        if RoarForever_StorageStatus then
+            print("Roar Forever: " .. RoarForever_StorageStatus())
+        end
         local roarKey = GetRoarKeyForUnit("player") or "unknown"
         local fileDataID = roarSounds[roarKey]
         print("Roar Forever: detected " .. roarKey .. ", FileDataID " .. (fileDataID or "not mapped"))
