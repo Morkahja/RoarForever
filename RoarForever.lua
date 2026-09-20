@@ -198,15 +198,6 @@ SLASH_ROARFOREVER2 = "/rf"
 SlashCmdList.ROARFOREVER = function(msg)
     msg = string.lower((msg or ""):match("^%s*(.-)%s*$"))
 
-    if msg == "" or msg == "config" or msg == "ui" then
-        if RoarForever_OpenConfig then
-            RoarForever_OpenConfig()
-        else
-            print("Roar Forever: configuration UI is unavailable.")
-        end
-        return
-    end
-
     if msg == "test" then
         local roarKey = GetRoarKeyForUnit("player")
         local fileDataID = roarKey and roarSounds[roarKey]
@@ -227,17 +218,10 @@ SlashCmdList.ROARFOREVER = function(msg)
     end
 
     if msg == "status" then
-        if RoarForever_StorageStatus then
-            print("Roar Forever: " .. RoarForever_StorageStatus())
-        end
         local roarKey = GetRoarKeyForUnit("player") or "unknown"
         local fileDataID = roarSounds[roarKey]
         print("Roar Forever: detected " .. roarKey .. ", FileDataID " .. (fileDataID or "not mapped"))
 
-        if RoarForever_ActionStatus then
-            local enabled, count = RoarForever_ActionStatus()
-            print("Roar Forever: ability emotes " .. (enabled and "enabled" or "disabled") .. ", " .. tostring(count) .. " configured abilities")
-        end
         return
     end
 
@@ -249,5 +233,5 @@ SlashCmdList.ROARFOREVER = function(msg)
         return
     end
 
-    print("Roar Forever: /rf | /rf test | /rf status | /rf id <FileDataID>")
+    print("Roar Forever: /roar | /rf test | /rf status | /rf id <FileDataID>")
 end

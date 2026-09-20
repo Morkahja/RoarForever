@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- The public addon now focuses exclusively on restoring `/roar` voice sounds.
+- Removed the ability-emote engine, configuration UI, saved profiles, and beta recovery setup from the public package.
+- Installation now needs only `RoarForever.toc` and `RoarForever.lua`, with no account-specific setup or saved settings.
+- Kept `/rf test`, `/rf status`, and `/rf id <FileDataID>` sound commands.
+- Ability-emote development is deferred; existing private local settings can be maintained separately.
+
 ## 0.2.4
 
 - Integrated settings recovery into Roar Forever. The separate **Roar Forever - Local Recovery** addon is no longer needed after migrating the local setup.
