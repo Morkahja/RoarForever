@@ -66,5 +66,16 @@ When an assigned ability succeeds, Roar Forever checks its chance and cooldown, 
 Place the `RoarForever` folder in the Forever client's `Interface/AddOns/` directory. It must contain:
 
 - `RoarForever.toc`
+- `RoarForever_Storage.lua`
 - `RoarForever.lua`
 - `RoarForever_ActionEmotes.lua`
+
+Copy all four files together. A missing `RoarForever_Storage.lua` causes a load error at line 8 of the `.toc` and prevents the character profile from being bound to persistent storage.
+
+On Windows, run `./Install-Local.ps1` from a complete checkout to install into the default Forever beta addon directory. The script checks every file listed in the `.toc` before copying and verifies installed file hashes. It backs up existing files to a timestamped folder under your temporary directory before replacing them. Use `-Destination 'D:\Games\World of Warcraft\_classic_beta_\Interface\AddOns\RoarForever'` for another installation.
+
+For development, pull the repository before editing, compare any local addon changes, then run the installer after each tested change and commit/push the same files to GitHub. The installer does not pull, push, or run in the background.
+
+After installation, type `/reload`, then `/rf status` and `/rf`. Configure an ability, reload again, and confirm the settings remain. File/hash checks do not replace this in-game check.
+
+Settings are saved in account-wide `RoarForeverStorage.profiles`, keyed by character GUID. `RoarForeverDB` references the current character's profile; older name or name-realm profiles are migrated at login.
