@@ -39,8 +39,6 @@ local function session(snapshot, recovery, nativeRestore, guid)
     end
     if recovery and snapshot then
         run(snapshot)
-        env.RoarForever_RecoveryStorage = env.RoarForeverStorage
-        env.RoarForever_RecoveryReady = type(env.RoarForeverStorage) == 'table'
     end
     for _, file in ipairs(files) do setfenv(assert(loadfile(file)), env)() end
     -- The failure can clear the normal global after addon code has loaded.

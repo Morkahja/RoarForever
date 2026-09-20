@@ -31,6 +31,12 @@ Write-Output "Backup: $backup"
 foreach ($file in $files) {
     $source = Join-Path $PSScriptRoot $file
     $installed = Join-Path $target $file
+    # This file contains the installation-specific recovery loader. Never
+    # replace configured recovery with the empty distributed placeholder.
+    if ($file -eq 'RoarForever_Recovery.xml' -and (Test-Path -LiteralPath $installed)) {
+        Write-Output "Preserved: $file"
+        continue
+    }
     Copy-Item -LiteralPath $source -Destination $installed -Force
     if ((Get-FileHash -LiteralPath $source).Hash -ne (Get-FileHash -LiteralPath $installed).Hash) {
         throw "Installed file verification failed: $file. Backup: $backup"

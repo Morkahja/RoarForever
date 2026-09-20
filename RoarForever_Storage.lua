@@ -2,13 +2,15 @@
 -- WoW Forever is realmless, so profiles are keyed by the character GUID.
 -- A GUID is stable for the character and does not depend on realm naming.
 
+-- The preceding XML loads the live saved file when local recovery is enabled.
+-- Capture it before the client's normal SavedVariables pass can clear it.
+local recoveryStorage = RoarForeverStorage
+local recoveryReady = type(recoveryStorage) == "table"
+
 local function EnsureRoot()
     if type(RoarForeverStorage) ~= "table" then
-        -- The optional local recovery addon reads our saved file through its
-        -- TOC before this addon loads. Keep that reference even if the client's
-        -- broken SavedVariables pass clears the normal global afterward.
-        if type(RoarForever_RecoveryStorage) == "table" then
-            RoarForeverStorage = RoarForever_RecoveryStorage
+        if recoveryReady then
+            RoarForeverStorage = recoveryStorage
         else
             RoarForeverStorage = {}
         end
@@ -74,8 +76,8 @@ function RoarForever_StorageStatus()
     if not guid then
         return "character profile unavailable"
     end
-    if RoarForever_RecoveryReady then
-        return "local recovery loaded; profile " .. guid
+    if recoveryReady then
+        return "built-in recovery loaded; profile " .. guid
     end
     return "standard client saving; profile " .. guid .. " (Forever beta may fail to restore settings)"
 end

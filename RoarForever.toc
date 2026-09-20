@@ -2,10 +2,10 @@
 ## Title: Roar Forever
 ## Notes: Restores original /roar voice sounds and adds configurable ability-triggered emotes in World of Warcraft: Forever.
 ## Author: Morkahja
-## Version: 0.2.3
+## Version: 0.2.4
 ## SavedVariables: RoarForeverStorage
-## OptionalDeps: RoarForever_Recovery
 
+RoarForever_Recovery.xml
 RoarForever_Storage.lua
 RoarForever.lua
 RoarForever_ActionEmotes.lua

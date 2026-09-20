@@ -3,7 +3,7 @@ param(
     [string]$AddonDirectory = 'C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns\RoarForever'
 )
 
-# This installs an optional companion addon. It does not modify saved data,
+# This configures recovery inside RoarForever. It does not modify saved data,
 # run a background process, or upload any account/character information.
 $ErrorActionPreference = 'Stop'
 $saved = Get-Item -LiteralPath $SavedVariablesFile
@@ -20,8 +20,7 @@ $addon = Get-Item -LiteralPath $AddonDirectory
 if ($addon.Name -ne 'RoarForever' -or -not $addon.PSIsContainer) {
     throw 'AddonDirectory must be the installed RoarForever folder.'
 }
-$recovery = Join-Path $addon.Parent.FullName 'RoarForever_Recovery'
-$link = Join-Path $recovery 'SavedVariables'
+$link = Join-Path $addon.FullName 'SavedVariables'
 if (Test-Path -LiteralPath $link) {
     $existing = Get-Item -LiteralPath $link -Force
     if ($existing.LinkType -ne 'Junction' -or
@@ -29,28 +28,17 @@ if (Test-Path -LiteralPath $link) {
         throw 'Existing recovery link has a different target. No files changed.'
     }
 }
-New-Item -ItemType Directory -Path $recovery -Force | Out-Null
 if (-not (Test-Path -LiteralPath $link)) {
     New-Item -ItemType Junction -Path $link -Target $saved.Directory.FullName | Out-Null
 }
-$toc = @'
-## Interface: 16001
-## Title: Roar Forever - Local Recovery
-## Notes: Loads this installation's RoarForever settings around the Forever beta SavedVariables bug.
-## Version: 0.2.3
-
-SavedVariables\RoarForever.lua
-Capture.lua
+$loader = @'
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="SavedVariables\RoarForever.lua"/>
+</Ui>
 '@
-$capture = @'
--- Keep a reference before the main addon's normal SavedVariables load pass.
-RoarForever_RecoveryStorage = RoarForeverStorage
-RoarForever_RecoveryReady = type(RoarForever_RecoveryStorage) == "table"
-'@
-Set-Content -LiteralPath (Join-Path $recovery 'RoarForever_Recovery.toc') -Value $toc -Encoding ascii
-Set-Content -LiteralPath (Join-Path $recovery 'Capture.lua') -Value $capture -Encoding ascii
 $linked = Join-Path $link 'RoarForever.lua'
 if ((Get-FileHash -LiteralPath $linked).Hash -ne (Get-FileHash -LiteralPath $saved.FullName).Hash) {
     throw 'Recovery file verification failed.'
 }
-Write-Output 'Recovery installed and file verified. Restart WoW, enable Roar Forever - Local Recovery, and run /rf status.'
+Set-Content -LiteralPath (Join-Path $addon.FullName 'RoarForever_Recovery.xml') -Value $loader -Encoding ascii
+Write-Output 'Built-in recovery installed and file verified. Only Roar Forever needs to be enabled. Restart WoW and run /rf status.'
