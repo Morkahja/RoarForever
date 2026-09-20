@@ -1,33 +1,36 @@
 # Roar Forever
 
-Restores player-character `/roar` voice sounds in World of Warcraft: Forever.
+**Version 0.3.0** — a lightweight roar sound fix for World of Warcraft: Forever.
+
+Roar Forever plays the matching character voice when it detects a `/roar` emote. It uses audio already included in the game client, so there are no sound downloads or configuration steps.
 
 ## Installation
 
-Extract `RoarForever.zip` into the Forever client's `Interface/AddOns` directory. The `RoarForever` folder contains just:
+1. Extract `RoarForever.zip` into `World of Warcraft\_classic_beta_\Interface\AddOns`.
+2. Check that the `RoarForever` folder contains `RoarForever.toc` and `RoarForever.lua`.
+3. Restart WoW and enable **Roar Forever** in the addon list.
+4. Use `/roar` normally.
 
-- `RoarForever.toc`
-- `RoarForever.lua`
-
-Restart WoW and enable **Roar Forever**. Use `/roar` normally.
-
-No settings, account-specific paths, folder links, or recovery setup are required. The addon uses sounds already included in the game client.
+The addon has no saved settings and needs no account-specific setup. Playback is local: other players need their own sound fix to hear the restored audio on their computers.
 
 ## Commands
 
-- `/rf test` plays your character's mapped roar sound.
-- `/rf status` shows the detected character voice and sound ID.
-- `/rf id <FileDataID>` tests a specific sound ID.
+| Command | Purpose |
+|---|---|
+| `/rf` | Show the available commands. |
+| `/rf test` | Play your character's mapped roar sound. |
+| `/rf status` | Show the detected character voice and sound ID. |
+| `/rf id <FileDataID>` | Test a specific sound ID. |
+
+`/roarforever` can also be used in place of `/rf`.
 
 ## Compatibility
 
-- Forever Interface: `16001`.
-- Listens to `CHAT_MSG_TEXT_EMOTE` and plays matching racial roar audio locally.
-- Current roar-message detection recognizes English emote text.
-- Gnome female sound has been confirmed in the beta; the other racial mappings still need in-game confirmation.
+- Targets the Forever beta, Interface `16001`.
+- Includes male and female voice mappings for Dwarf, Gnome, Human, Night Elf, Orc, Tauren, Troll, and Undead characters.
+- Current emote detection recognizes English roar messages.
+- Gnome female playback has been confirmed in-game. The other mapped voices still need in-game confirmation.
 
-## Scope
+## Release notes
 
-Version 0.3.0 is sound-only. Ability-triggered emotes and their settings recovery are excluded from the public addon while beta persistence remains unreliable. They may return in a later release.
-
-See [CHANGELOG.md](CHANGELOG.md) for release notes.
+See [CHANGELOG.md](CHANGELOG.md).
