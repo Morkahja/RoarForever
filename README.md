@@ -1,8 +1,6 @@
 # Roar Forever
 
-Roar Forever restores the original player-character `/roar` voice sounds locally in World of Warcraft: Forever and adds an optional ability-triggered emote system.
-
-This is a Forever port and expansion of the earlier `ROARSounds` / RoarGuild ideas.
+Roar Forever restores player-character `/roar` voice sounds in World of Warcraft: Forever and adds an optional ability-triggered emote system.
 
 ## Forever compatibility
 
@@ -10,7 +8,7 @@ This is a Forever port and expansion of the earlier `ROARSounds` / RoarGuild ide
 - Uses `CHAT_MSG_TEXT_EMOTE` for roar sound restoration
 - Uses `UNIT_SPELLCAST_SUCCEEDED` for ability-triggered emotes
 - Uses Blizzard's internal FileDataIDs, so no copied audio files are bundled
-- Per-character action-emote configuration through `RoarForeverDB`
+- Per-character action-emote configuration with persistent saved settings
 
 ## Ability emotes
 
@@ -29,9 +27,9 @@ The Blizzard-style configuration window provides:
 - cooldown slider from 0-120 seconds
 - remove button for configured abilities
 
-When an assigned ability succeeds, Roar Forever checks its chance and cooldown, chooses one enabled emote at random, and executes it with `DoEmote`. If the selected emote is `/roar`, the roar-sound system then plays that character's original racial roar voice.
+When an assigned ability succeeds, Roar Forever checks its chance and cooldown, chooses one enabled emote at random, and executes it with `DoEmote`. If the selected emote is `/roar`, the roar-sound system then plays that character's racial roar voice.
 
-## Original roar FileDataIDs
+## Roar FileDataIDs
 
 | Character | FileDataID |
 |---|---:|
@@ -70,12 +68,10 @@ Place the `RoarForever` folder in the Forever client's `Interface/AddOns/` direc
 - `RoarForever.lua`
 - `RoarForever_ActionEmotes.lua`
 
-Copy all four files together. A missing `RoarForever_Storage.lua` causes a load error at line 8 of the `.toc` and prevents the character profile from being bound to persistent storage.
+Copy all four files together.
 
-On Windows, run `./Install-Local.ps1` from a complete checkout to install into the default Forever beta addon directory. The script checks every file listed in the `.toc` before copying and verifies installed file hashes. It backs up existing files to a timestamped folder under your temporary directory before replacing them. Use `-Destination 'D:\Games\World of Warcraft\_classic_beta_\Interface\AddOns\RoarForever'` for another installation.
+On Windows, run `./Install-Local.ps1` from a complete checkout to install into the default Forever beta addon directory. Use `-Destination 'D:\Games\World of Warcraft\_classic_beta_\Interface\AddOns\RoarForever'` for another installation.
 
-For development, pull the repository before editing, compare any local addon changes, then run the installer after each tested change and commit/push the same files to GitHub. The installer does not pull, push, or run in the background.
+After installation, type `/reload`, then `/rf status` and `/rf`.
 
-After installation, type `/reload`, then `/rf status` and `/rf`. Configure an ability, reload again, and confirm the settings remain. File/hash checks do not replace this in-game check.
-
-Settings are saved in account-wide `RoarForeverStorage.profiles`, keyed by character GUID. `RoarForeverDB` references the current character's profile; older name or name-realm profiles are migrated at login.
+Settings are saved per character in `RoarForeverStorage.profiles`, keyed by character GUID.
