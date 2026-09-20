@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $entries = @(Get-Content -LiteralPath (Join-Path $PSScriptRoot 'RoarForever.toc') |
     ForEach-Object { $_.Trim() } |
     Where-Object { $_ -and -not $_.StartsWith('#') })
-$files = @('RoarForever.toc', 'README.md') + $entries
+$files = @('RoarForever.toc', 'README.md', 'CHANGELOG.md') + $entries
 foreach ($file in $files) {
     if ($file -notmatch '^[A-Za-z0-9_.-]+$') { throw "Unexpected addon filename: $file" }
     if (-not (Test-Path -LiteralPath (Join-Path $PSScriptRoot $file) -PathType Leaf)) {

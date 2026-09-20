@@ -1,5 +1,7 @@
 # Roar Forever
 
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
 Roar Forever restores player-character `/roar` voice sounds in World of Warcraft: Forever and adds an optional ability-triggered emote system.
 
 ## Forever compatibility
