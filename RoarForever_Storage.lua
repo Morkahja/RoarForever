@@ -1,20 +1,8 @@
 -- Persistent storage for Roar Forever.
--- We intentionally use an account-wide SavedVariables table and keep
--- character-separated profiles ourselves. This avoids relying on
--- SavedVariablesPerCharacter behavior in the Forever beta client.
+-- WoW Forever is realmless, so profiles are keyed by the character GUID.
+-- A GUID is stable for the character and does not depend on realm naming.
 
-local function ProfileKey()
-    local name = UnitName("player") or "Unknown"
-    local realm = (GetRealmName and GetRealmName()) or ""
-
-    if realm == "" then
-        return name
-    end
-
-    return name .. "-" .. realm
-end
-
-local function EnsureStorage()
+local function EnsureRoot()
     if type(RoarForeverStorage) ~= "table" then
         RoarForeverStorage = {}
     end
@@ -22,26 +10,60 @@ local function EnsureStorage()
     if type(RoarForeverStorage.profiles) ~= "table" then
         RoarForeverStorage.profiles = {}
     end
+end
 
-    local key = ProfileKey()
-    local profile = RoarForeverStorage.profiles[key]
+local function LegacyKeys()
+    local keys = {}
+    local name = UnitName("player")
+    if not name or name == "" then
+        return keys
+    end
+
+    keys[#keys + 1] = name
+
+    local realm = (GetRealmName and GetRealmName()) or ""
+    if realm ~= "" then
+        keys[#keys + 1] = name .. "-" .. realm
+    end
+
+    return keys
+end
+
+local function BindCharacterDB()
+    EnsureRoot()
+
+    local guid = UnitGUID("player")
+    if not guid or guid == "" then
+        return nil
+    end
+
+    local profile = RoarForeverStorage.profiles[guid]
+
+    -- Migrate a profile created by the earlier name/realm-keyed version.
+    if type(profile) ~= "table" then
+        for _, oldKey in ipairs(LegacyKeys()) do
+            local oldProfile = RoarForeverStorage.profiles[oldKey]
+            if type(oldProfile) == "table" then
+                profile = oldProfile
+                RoarForeverStorage.profiles[oldKey] = nil
+                break
+            end
+        end
+    end
 
     if type(profile) ~= "table" then
         profile = {}
-        RoarForeverStorage.profiles[key] = profile
     end
 
-    -- The rest of the addon continues to use RoarForeverDB. Point it at the
-    -- current character's profile, while the serialised root is RoarForeverStorage.
+    RoarForeverStorage.profiles[guid] = profile
     RoarForeverDB = profile
-    return profile, key
+    return profile, guid
 end
 
-RoarForever_BindCharacterDB = EnsureStorage
-EnsureStorage()
+RoarForever_BindCharacterDB = BindCharacterDB
 
 local storageFrame = CreateFrame("Frame")
 storageFrame:RegisterEvent("PLAYER_LOGIN")
 storageFrame:SetScript("OnEvent", function()
-    EnsureStorage()
+    BindCharacterDB()
 end)
