@@ -362,10 +362,38 @@ local voiceSounds = {
         SkyborneFemale = { 7744891, 7744892, 7744893 },
         SkyborneMale = { 7744487, 7744486, 7744485 },
     },
+    train = {
+        DwarfFemale = { 539802 },
+        DwarfMale = { 539881 },
+        GnomeFemale = { 540271 },
+        GnomeMale = { 540275 },
+        HumanFemale = { 540535 },
+        HumanMale = { 540734 },
+        NightElfFemale = { 540870 },
+        NightElfMale = { 540947 },
+        OrcFemale = { 541157 },
+        OrcMale = { 541239 },
+        TaurenFemale = { 542818 },
+        TaurenMale = { 542896 },
+        TrollFemale = { 543085 },
+        TrollMale = { 543093 },
+        UndeadFemale = { 542526 },
+        UndeadMale = { 542600 },
+        SkyborneFemale = { 7744921 },
+        SkyborneMale = { 7744513 },
+    },
 }
 
 voiceSounds.retreat = voiceSounds.flee
 voiceSounds.congratulate = voiceSounds.congrats
+
+-- Every race uses the same four whistle effects.
+local whistleSounds = { 2445845, 2445847, 2445848, 2445849 }
+voiceSounds.whistle = {}
+for _, race in ipairs({ "Dwarf", "Gnome", "Human", "NightElf", "Orc", "Tauren", "Troll", "Undead", "Skyborne" }) do
+    voiceSounds.whistle[race .. "Female"] = whistleSounds
+    voiceSounds.whistle[race .. "Male"] = whistleSounds
+end
 
 local function NormalizeName(name)
     if not name then
@@ -546,6 +574,18 @@ local function DetectEmote(text)
         return "followme"
     end
 
+    if string.find(text, " whistles", 1, true)
+        or string.find(text, "you whistle", 1, true) == 1
+        or string.find(text, " sharp whistle", 1, true) then
+        return "whistle"
+    end
+
+    -- Sent by this addon when the player uses /train. "Achoo" is a sneeze.
+    if string.find(text, "choo choo", 1, true)
+        or string.find(text, "train whistle", 1, true) then
+        return "train"
+    end
+
     return nil
 end
 
@@ -651,7 +691,7 @@ local function GetSenderVoiceKey(sender, guid)
 end
 
 frame:SetScript("OnEvent", function(self, event, ...)
-    if event ~= "CHAT_MSG_TEXT_EMOTE" then
+    if event ~= "CHAT_MSG_TEXT_EMOTE" and event ~= "CHAT_MSG_EMOTE" then
         return
     end
 
@@ -667,8 +707,13 @@ frame:SetScript("OnEvent", function(self, event, ...)
     end
 
     -- The client already plays normal voiced emotes for you, and for party
-    -- and raid members. Roar is still missing in those cases, so it stays on.
-    if emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender)) then
+    -- and raid members. Roar stays on. /train has no game text, so the line
+    -- this addon sends is played for other people even in a group.
+    if emoteName == "train" then
+        if IsLocalPlayer(sender, guid) then
+            return
+        end
+    elseif emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender)) then
         return
     end
 
@@ -683,6 +728,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 end)
 
 frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
+frame:RegisterEvent("CHAT_MSG_EMOTE")
 
 SLASH_ROARFOREVER1 = "/roarforever"
 SLASH_ROARFOREVER2 = "/rf"
@@ -710,7 +756,7 @@ SlashCmdList.ROARFOREVER = function(msg)
 
         if not voiceSounds[testEmote] then
             print("Roar Forever: unknown test emote '" .. testEmote .. "'.")
-            print("Roar Forever: test options are roar, cheer, laugh, joke, moo, flee, retreat, welcome, yes, no, healme, rasp, flirt, oom, sigh, charge, cry, congrats, congratulate, followme.")
+            print("Roar Forever: test options are roar, cheer, laugh, joke, moo, flee, retreat, welcome, yes, no, healme, rasp, flirt, oom, sigh, charge, cry, congrats, congratulate, followme, train, whistle.")
             return
         end
 
@@ -756,4 +802,63 @@ SlashCmdList.ROARFOREVER = function(msg)
     end
 
     print("Roar Forever: /rf on | /rf off | /rf test [emote] | /rf status | /rf id <FileDataID>")
+end
+
+-- Forever never announces /train. Take over the slash command, play the real
+-- train emote, then send a custom /e line other Roar Forever clients can hear.
+local TRAIN_LINE = "blows a train whistle. Choo choo!"
+local lastTrainAnnounce = 0
+
+local function SendEmoteLine(text)
+    if C_ChatInfo and C_ChatInfo.SendChatMessage then
+        C_ChatInfo.SendChatMessage(text, "EMOTE")
+    elseif SendChatMessage then
+        SendChatMessage(text, "EMOTE")
+    end
+end
+
+local function AnnounceTrain()
+    if not AddonEnabled() then
+        return
+    end
+
+    local now = GetTime()
+    if now - lastTrainAnnounce < 1 then
+        return
+    end
+
+    lastTrainAnnounce = now
+    SendEmoteLine(TRAIN_LINE)
+end
+
+local function AnnounceTrainSoon()
+    if C_Timer and C_Timer.After then
+        C_Timer.After(0, AnnounceTrain)
+    else
+        AnnounceTrain()
+    end
+end
+
+local function IsTrainToken(emote)
+    return type(emote) == "string" and string.upper(emote) == "TRAIN"
+end
+
+-- Slash commands are checked before built-in emote tokens, so this replaces
+-- the silent game /train and still plays the choo-choo through DoEmote.
+SLASH_ROARFOREVERTRAIN1 = "/train"
+SlashCmdList.ROARFOREVERTRAIN = function()
+    if DoEmote then
+        DoEmote("TRAIN")
+    end
+
+    AnnounceTrainSoon()
+end
+
+if hooksecurefunc and DoEmote then
+    -- Bindings and other addons call DoEmote("TRAIN") without going through /train.
+    hooksecurefunc("DoEmote", function(emote)
+        if IsTrainToken(emote) then
+            AnnounceTrainSoon()
+        end
+    end)
 end

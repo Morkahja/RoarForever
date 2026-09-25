@@ -23,10 +23,12 @@ Roar Forever restores character voice sounds that Forever does not reliably play
 - `/cry` — restores the race/sex-specific cry for other players.
 - `/congrats` / `/congratulate` — restores a random congratulations line for other players.
 - `/followme` — restores the follow-me voice for other players.
+- `/whistle` — restores the whistle for other players.
+- `/train` — Roar Forever takes over `/train`, plays the normal choo-choo, and also sends "blows a train whistle. Choo choo!" Other people using Roar Forever hear the train voice from that line, including group members.
 
 Roar Forever does not replay your own normal voiced emotes, because the client already plays those. `/roar` is the exception. In a party or raid, the client already plays the other voices for group members, so Roar Forever restores only `/roar` there. Nearby players who are not in your group still get the full set.
 
-`/train` is not restored for other players because Forever does not emit `CHAT_MSG_TEXT_EMOTE` when another player uses it, so the addon has no reliable event to detect.
+Someone who is not using Roar Forever can still `/train` without sending a line, so there is nothing for the addon to hear.
 
 ## Installation
 
@@ -44,7 +46,7 @@ Playback is local: another player does not need Roar Forever installed for you t
 | `/rf on` | Turn Roar Forever on. |
 | `/rf off` | Turn Roar Forever off. |
 | `/rf test` | Play your character's mapped roar sound. |
-| `/rf test <emote>` | Test a mapped emote for your character, including `cry`, `congrats`, and `followme`. |
+| `/rf test <emote>` | Test a mapped emote for your character, including `train` and `whistle`. |
 | `/rf status` | Show whether the addon is on, your character voice, and the mapped emotes. |
 | `/rf id <FileDataID>` | Test a specific sound ID. |
 

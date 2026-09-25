@@ -2,6 +2,11 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.4.6 — 2026-09-26
+
+- `/train` now sends "blows a train whistle. Choo choo!" so other people using Roar Forever can hear it, including in a party or raid.
+- Restored the `/whistle` sound for nearby players.
+
 ## 0.4.5 — 2026-09-26
 
 - Restored nearby-player voices for `/cry`, `/congrats` / `/congratulate`, and `/followme`.
