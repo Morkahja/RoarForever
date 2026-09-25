@@ -1,17 +1,28 @@
 # Roar Forever
 
-**Version 0.3.0** — a lightweight roar sound fix for World of Warcraft: Forever.
+**Version 0.4.0** — a lightweight player voice-emote sound fix for World of Warcraft: Forever.
 
-Roar Forever plays the matching character voice when it detects a `/roar` emote. It uses audio already included in the game client, so there are no sound downloads or configuration steps.
+Roar Forever restores character voice sounds that Forever does not reliably play when nearby players use voiced emotes. It uses audio already included in the game client, so there are no bundled sound files and no configuration steps.
+
+## Restored emotes
+
+- `/roar` — restored for your own character and other players.
+- `/cheer` — restores the race/sex-specific cheer for other players.
+- `/laugh` / `/lol` — restores the race/sex-specific laugh for other players.
+- `/joke` / `/silly` — restores a race/sex-specific joke voice line for other players.
+- `/moo` — restores the dedicated Tauren male/female moo for other players. Other races have no dedicated player-character moo voice file.
+
+Roar Forever deliberately does not replay your own normal voiced emotes because the client already plays those locally. `/roar` is the exception.
+
+`/train` is not restored for other players because Forever does not emit `CHAT_MSG_TEXT_EMOTE` when another player uses it, so the addon has no reliable event to detect.
 
 ## Installation
 
 1. Extract `RoarForever.zip` into `World of Warcraft\_classic_beta_\Interface\AddOns`.
 2. Check that the `RoarForever` folder contains `RoarForever.toc` and `RoarForever.lua`.
 3. Restart WoW and enable **Roar Forever** in the addon list.
-4. Use `/roar` normally.
 
-The addon has no saved settings and needs no account-specific setup. Playback is local: other players need their own sound fix to hear the restored audio on their computers.
+The addon has no saved settings and needs no account-specific setup. Playback is local: another player does not need Roar Forever installed for you to hear a supported detected emote from them.
 
 ## Commands
 
@@ -19,7 +30,8 @@ The addon has no saved settings and needs no account-specific setup. Playback is
 |---|---|
 | `/rf` | Show the available commands. |
 | `/rf test` | Play your character's mapped roar sound. |
-| `/rf status` | Show the detected character voice and sound ID. |
+| `/rf test <emote>` | Test `roar`, `cheer`, `laugh`, `joke`, or `moo` for your character. |
+| `/rf status` | Show the detected character voice and mapped emotes. |
 | `/rf id <FileDataID>` | Test a specific sound ID. |
 
 `/roarforever` can also be used in place of `/rf`.
@@ -28,8 +40,9 @@ The addon has no saved settings and needs no account-specific setup. Playback is
 
 - Targets the Forever beta, Interface `16001`.
 - Includes male and female voice mappings for Dwarf, Gnome, Human, Night Elf, Orc, Tauren, Troll, and Undead characters.
-- Current emote detection recognizes English roar messages.
-- Gnome female playback has been confirmed in-game. The other mapped voices still need in-game confirmation.
+- Current emote detection recognizes English emote messages.
+- Sound mappings use Blizzard FileDataIDs from the current wowdev community listfile.
+- Gnome female `/roar` playback has been confirmed in-game. The new restored emotes should be treated as beta until they have been checked in the Forever client.
 
 ## Release notes
 
