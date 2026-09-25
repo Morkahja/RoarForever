@@ -1,6 +1,6 @@
 # Roar Forever
 
-**Version 0.4.1** — a lightweight player voice-emote sound fix for World of Warcraft: Forever.
+A lightweight player voice-emote sound fix for World of Warcraft: Forever.
 
 Roar Forever restores character voice sounds that Forever does not reliably play when nearby players use voiced emotes. It uses audio already included in the game client, so there are no bundled sound files and no configuration steps.
 
