@@ -1,6 +1,17 @@
 # Roar Forever — Changelog
 
-Release notes for the standalone roar sound addon.
+Release notes for the standalone player voice-emote sound addon.
+
+## 0.4.0 — 2026-09-25
+
+- Expanded Roar Forever beyond `/roar` into a general missing player voice-emote sound fix.
+- Added remote-player restoration for `/cheer`, `/laugh` / `/lol`, `/joke` / `/silly`, and Tauren `/moo`.
+- Added race/sex-specific FileDataID mappings for all eight classic races for cheer, laugh, and joke sounds.
+- Added Tauren female and male moo mappings.
+- Normal voiced emotes are restored only for other players to avoid doubling sounds the client already plays for the local character; `/roar` remains the exception.
+- Added `/rf test <emote>` for testing `roar`, `cheer`, `laugh`, `joke`, and `moo`.
+- Updated `/rf status` to report which emotes are mapped for the current character.
+- Kept `/train` unsupported because Forever does not expose another player's `/train` through `CHAT_MSG_TEXT_EMOTE`.
 
 ## 0.3.0 — 2026-09-20
 
