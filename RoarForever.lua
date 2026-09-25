@@ -7,6 +7,7 @@ local lastPlayTimeBySenderAndEmote = {}
 -- Classic names come from the wowdev community listfile. Joke variants, and
 -- every Skyborne ID, are the files in that emote's sound kit on Forever
 -- build 1.60.1.70009. Skyborne files are not named in the listfile yet.
+-- /retreat uses the flee voice. /yes is the nod emote; its files are the Yes lines.
 -- Each value is an array so additional voice variants can be added without
 -- changing the playback code.
 local voiceSounds = {
@@ -100,7 +101,89 @@ local voiceSounds = {
         TaurenFemale = { 542820 },
         TaurenMale = { 542894 },
     },
+    flee = {
+        DwarfFemale = { 540000, 540009 },
+        DwarfMale = { 540037, 540079, 540081 },
+        GnomeFemale = { 540453, 540441, 540458 },
+        GnomeMale = { 540479, 540480, 540465 },
+        HumanFemale = { 540616, 540646 },
+        HumanMale = { 540692, 540678 },
+        NightElfFemale = { 541048, 541063 },
+        NightElfMale = { 541106, 541114 },
+        OrcFemale = { 541366, 541360 },
+        OrcMale = { 541392, 541419 },
+        TaurenFemale = { 543011, 542984 },
+        TaurenMale = { 543041, 543056 },
+        TrollFemale = { 543246, 543260 },
+        TrollMale = { 543335, 543320 },
+        UndeadFemale = { 542689, 542707 },
+        UndeadMale = { 542767, 542785 },
+        SkyborneFemale = { 7744885, 7744886, 7744887 },
+        SkyborneMale = { 7744481, 7744480, 7744479 },
+    },
+    welcome = {
+        DwarfFemale = { 540016, 539987, 539967 },
+        DwarfMale = { 540026, 540038, 540078 },
+        GnomeFemale = { 540417, 540448, 540411 },
+        GnomeMale = { 540462, 540488, 540499 },
+        HumanFemale = { 540651, 540656, 540620 },
+        HumanMale = { 540677, 540666, 540669 },
+        NightElfFemale = { 541050, 541076, 541064 },
+        NightElfMale = { 541102, 541095, 541108 },
+        OrcFemale = { 541353, 541359, 541324 },
+        OrcMale = { 541405, 541436, 541385 },
+        TaurenFemale = { 543018, 542999, 543017 },
+        TaurenMale = { 543081, 543079, 543066 },
+        TrollFemale = { 543238, 543275, 543276 },
+        TrollMale = { 543333, 543294, 543308 },
+        UndeadFemale = { 542701, 542709, 542696 },
+        UndeadMale = { 542770, 542758 },
+        SkyborneFemale = { 7744924, 7744926 },
+        SkyborneMale = { 7930417, 7930420 },
+    },
+    yes = {
+        DwarfFemale = { 540002, 540011, 539982 },
+        DwarfMale = { 540047, 540062, 540022, 540044 },
+        GnomeFemale = { 540418, 540422, 540446 },
+        GnomeMale = { 540471, 540477, 540483 },
+        HumanFemale = { 540624, 540605, 540632 },
+        HumanMale = { 540702, 540709, 540667 },
+        NightElfFemale = { 541071, 541058, 541046 },
+        NightElfMale = { 541099, 541130, 541137 },
+        OrcFemale = { 541331, 541365, 541319, 541338 },
+        OrcMale = { 541424, 541399, 541379, 541377 },
+        TaurenFemale = { 543022, 542983, 543021 },
+        TaurenMale = { 543046, 543030, 543036 },
+        TrollFemale = { 543267, 543268, 543249 },
+        TrollMale = { 543313, 543306, 543328, 543312 },
+        UndeadFemale = { 542729, 542703, 542718 },
+        UndeadMale = { 542750, 542741, 542789 },
+        SkyborneFemale = { 7744909, 7744910, 7744911 },
+        SkyborneMale = { 7744503, 7744504, 7744505 },
+    },
+    no = {
+        DwarfFemale = { 540003, 540012, 539996 },
+        DwarfMale = { 540054, 540056, 540040, 540074 },
+        GnomeFemale = { 540440, 540429, 540433 },
+        GnomeMale = { 540496, 540514, 540506 },
+        HumanFemale = { 540614, 540658, 540607 },
+        HumanMale = { 540673, 540683, 540700, 540698 },
+        NightElfFemale = { 541068, 541039, 541074 },
+        NightElfMale = { 541128, 541094, 541083 },
+        OrcFemale = { 541340, 541326, 541343 },
+        OrcMale = { 541428, 541390, 541416 },
+        TaurenFemale = { 542980, 543005, 542979 },
+        TaurenMale = { 543042, 543080, 543059 },
+        TrollFemale = { 543252, 543240, 543239 },
+        TrollMale = { 543324, 543296, 543286, 543295 },
+        UndeadFemale = { 542681, 542675, 542723 },
+        UndeadMale = { 542749, 542743, 542780 },
+        SkyborneFemale = { 7744906, 7744907, 7744908 },
+        SkyborneMale = { 7744500, 7744501, 7744502 },
+    },
 }
+
+voiceSounds.retreat = voiceSounds.flee
 
 local function NormalizeName(name)
     if not name then
@@ -206,6 +289,31 @@ local function DetectEmote(text)
         or string.find(text, "you moo", 1, true) == 1
         or string.find(text, "mooooo", 1, true) then
         return "moo"
+    end
+
+    -- /flee and /retreat share the flee voice. Forever's flee lines all say
+    -- "to flee". A retreat line is matched on its own wording.
+    if string.find(text, " to flee", 1, true)
+        or string.find(text, " retreat", 1, true)
+        or string.find(text, "you retreat", 1, true) == 1 then
+        return "flee"
+    end
+
+    if string.find(text, " welcomes", 1, true)
+        or string.find(text, "you welcome", 1, true) == 1 then
+        return "welcome"
+    end
+
+    -- /yes is the nod emote. The spoken lines are the Yes voice files.
+    if string.find(text, " nods", 1, true)
+        or string.find(text, "you nod", 1, true) == 1 then
+        return "yes"
+    end
+
+    if string.find(text, " no.", 1, true)
+        or string.find(text, "states, no", 1, true)
+        or string.find(text, "state, no", 1, true) then
+        return "no"
     end
 
     return nil
@@ -327,7 +435,7 @@ SlashCmdList.ROARFOREVER = function(msg)
 
         if not voiceSounds[testEmote] then
             print("Roar Forever: unknown test emote '" .. testEmote .. "'.")
-            print("Roar Forever: test options are roar, cheer, laugh, joke, moo.")
+            print("Roar Forever: test options are roar, cheer, laugh, joke, moo, flee, retreat, welcome, yes, no.")
             return
         end
 
@@ -371,5 +479,5 @@ SlashCmdList.ROARFOREVER = function(msg)
         return
     end
 
-    print("Roar Forever: /rf test [roar|cheer|laugh|joke|moo] | /rf status | /rf id <FileDataID>")
+    print("Roar Forever: /rf test [roar|cheer|laugh|joke|moo|flee|retreat|welcome|yes|no] | /rf status | /rf id <FileDataID>")
 end

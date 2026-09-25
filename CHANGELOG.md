@@ -2,24 +2,25 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.4.2 — 2026-09-25
+
+- Restored nearby-player voices for `/flee` and `/retreat`. Both use the flee voice.
+- Restored nearby-player voices for `/welcome`.
+- Restored nearby-player voices for `/yes` and `/no`.
+
 ## 0.4.1 — 2026-09-25
 
-- Added Skyborne voice-emote support. Forever reports the race file as `Skyborne` for both High Order and Windshaper, and both factions share one male and one female voice set.
-- Added Skyborne laugh support.
-- Added Skyborne joke/silly support with every variant in the race's joke sound kit.
-- Added Skyborne cheer and roar, which also have verified voice files. Skyborne has no dedicated moo files, so `/moo` stays Tauren-only.
-- Expanded `/joke` and `/silly` for the eight classic races so playback randomly uses every line in that race and sex's joke sound kit.
+- Added Skyborne voices for roar, cheer, laugh, and joke.
+- `/joke` and `/silly` now pick a random line from that character's full set of joke lines.
+- `/moo` stays Tauren-only.
 
 ## 0.4.0 — 2026-09-25
 
-- Expanded Roar Forever beyond `/roar` into a general missing player voice-emote sound fix.
-- Added remote-player restoration for `/cheer`, `/laugh` / `/lol`, `/joke` / `/silly`, and Tauren `/moo`.
-- Added race/sex-specific FileDataID mappings for all eight classic races for cheer, laugh, and joke sounds.
-- Added Tauren female and male moo mappings.
-- Normal voiced emotes are restored only for other players to avoid doubling sounds the client already plays for the local character; `/roar` remains the exception.
-- Added `/rf test <emote>` for testing `roar`, `cheer`, `laugh`, `joke`, and `moo`.
-- Updated `/rf status` to report which emotes are mapped for the current character.
-- Kept `/train` unsupported because Forever does not expose another player's `/train` through `CHAT_MSG_TEXT_EMOTE`.
+- Expanded Roar Forever beyond `/roar` to other missing player voice emotes.
+- Added nearby-player voices for `/cheer`, `/laugh` / `/lol`, `/joke` / `/silly`, and Tauren `/moo`.
+- Your own normal voiced emotes are left to the client. `/roar` still plays for you as well.
+- `/rf test` can try roar, cheer, laugh, joke, and moo. `/rf status` lists the voices mapped for your character.
+- `/train` is not restored. Forever does not announce another player's train emote.
 
 ## 0.3.0 — 2026-09-20
 

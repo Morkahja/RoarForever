@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: Roar Forever
 ## Notes: Restores missing player-character voice emote sounds in World of Warcraft: Forever.
-## Author: Morkahja
-## Version: 0.4.1
+## Author: Babunigaming
+## Version: 0.4.2
 
 RoarForever.lua
