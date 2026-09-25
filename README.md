@@ -1,6 +1,6 @@
 # Roar Forever
 
-**Version 0.4.0** — a lightweight player voice-emote sound fix for World of Warcraft: Forever.
+**Version 0.4.1** — a lightweight player voice-emote sound fix for World of Warcraft: Forever.
 
 Roar Forever restores character voice sounds that Forever does not reliably play when nearby players use voiced emotes. It uses audio already included in the game client, so there are no bundled sound files and no configuration steps.
 
@@ -9,7 +9,7 @@ Roar Forever restores character voice sounds that Forever does not reliably play
 - `/roar` — restored for your own character and other players.
 - `/cheer` — restores the race/sex-specific cheer for other players.
 - `/laugh` / `/lol` — restores the race/sex-specific laugh for other players.
-- `/joke` / `/silly` — restores a race/sex-specific joke voice line for other players.
+- `/joke` / `/silly` — restores a random race/sex-specific joke voice line for other players, chosen from that voice's full joke set.
 - `/moo` — restores the dedicated Tauren male/female moo for other players. Other races have no dedicated player-character moo voice file.
 
 Roar Forever deliberately does not replay your own normal voiced emotes because the client already plays those locally. `/roar` is the exception.
@@ -39,7 +39,7 @@ The addon has no saved settings and needs no account-specific setup. Playback is
 ## Compatibility
 
 - Targets the Forever beta, Interface `16001`.
-- Includes male and female voice mappings for Dwarf, Gnome, Human, Night Elf, Orc, Tauren, Troll, and Undead characters.
+- Includes male and female voice mappings for Dwarf, Gnome, Human, Night Elf, Orc, Tauren, Troll, Undead, and Skyborne characters.
 - Current emote detection recognizes English emote messages.
 - Sound mappings use Blizzard FileDataIDs from the current wowdev community listfile.
 - Gnome female `/roar` playback has been confirmed in-game. The new restored emotes should be treated as beta until they have been checked in the Forever client.

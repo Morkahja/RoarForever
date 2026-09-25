@@ -2,6 +2,14 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.4.1 — 2026-09-25
+
+- Added Skyborne voice-emote support. Forever reports the race file as `Skyborne` for both High Order and Windshaper, and both factions share one male and one female voice set.
+- Added Skyborne laugh support.
+- Added Skyborne joke/silly support with every variant in the race's joke sound kit.
+- Added Skyborne cheer and roar, which also have verified voice files. Skyborne has no dedicated moo files, so `/moo` stays Tauren-only.
+- Expanded `/joke` and `/silly` for the eight classic races so playback randomly uses every line in that race and sex's joke sound kit.
+
 ## 0.4.0 — 2026-09-25
 
 - Expanded Roar Forever beyond `/roar` into a general missing player voice-emote sound fix.

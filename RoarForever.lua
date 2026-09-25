@@ -4,7 +4,9 @@ local EMOTE_COOLDOWN = 0.30
 local lastPlayTimeBySenderAndEmote = {}
 
 -- Blizzard FileDataIDs for player-character voice emotes.
--- These mappings are taken from the current wowdev community listfile.
+-- Classic names come from the wowdev community listfile. Joke variants, and
+-- every Skyborne ID, are the files in that emote's sound kit on Forever
+-- build 1.60.1.70009. Skyborne files are not named in the listfile yet.
 -- Each value is an array so additional voice variants can be added without
 -- changing the playback code.
 local voiceSounds = {
@@ -25,6 +27,10 @@ local voiceSounds = {
         TrollMale = { 543311 },
         UndeadFemale = { 542680 },
         UndeadMale = { 542740 },
+        -- Skyborne roar kit from EmotesTextSound on Forever build 1.60.1.70009.
+        -- High Order and Windshaper share this voice set.
+        SkyborneFemale = { 8036579, 8036581, 8036583 },
+        SkyborneMale = { 8062196, 8062198, 8062200 },
     },
     cheer = {
         DwarfFemale = { 540014 },
@@ -43,6 +49,8 @@ local voiceSounds = {
         TrollMale = { 543331 },
         UndeadFemale = { 542697 },
         UndeadMale = { 542783 },
+        SkyborneFemale = { 7744884, 7961127 },
+        SkyborneMale = { 7744477, 7744478 },
     },
     laugh = {
         DwarfFemale = { 539798 },
@@ -61,27 +69,31 @@ local voiceSounds = {
         TrollMale = { 543094 },
         UndeadFemale = { 542518 },
         UndeadMale = { 542595 },
+        SkyborneFemale = { 8036475, 8036477, 8036479, 8036481 },
+        SkyborneMale = { 8062277, 8062279, 8062282 },
     },
     joke = {
-        -- Classic /silly and /joke voice lines are stored as Pissed sounds.
-        -- The chat event does not identify which random variant the sender heard,
-        -- so one stable voice line is used for now.
-        DwarfFemale = { 539989 },
-        DwarfMale = { 540055 },
-        GnomeFemale = { 540424 },
-        GnomeMale = { 540517 },
-        HumanFemale = { 540641 },
-        HumanMale = { 540663 },
-        NightElfFemale = { 541035 },
-        NightElfMale = { 541122 },
-        OrcFemale = { 541349 },
-        OrcMale = { 541433 },
-        TaurenFemale = { 542968 },
-        TaurenMale = { 543055 },
-        TrollFemale = { 543241 },
-        TrollMale = { 543315 },
-        UndeadFemale = { 542727 },
-        UndeadMale = { 542753 },
+        -- /silly and /joke use the race/sex Pissed sound kit.
+        -- CHAT_MSG_TEXT_EMOTE does not say which line the sender's client picked,
+        -- so playback chooses one at random from that race and sex's verified kit.
+        DwarfFemale = { 539989, 540017, 539993, 539999, 539970, 539968 },
+        DwarfMale = { 540055, 540067, 540032, 540030, 540050, 540049, 540084 },
+        GnomeFemale = { 540424, 540423, 540426, 540443 },
+        GnomeMale = { 540517, 540468, 540467, 540464, 540495, 540492 },
+        HumanFemale = { 540641, 540633, 540617, 540634, 540622, 540643, 540639 },
+        HumanMale = { 540663, 540716, 540699, 540679, 540680, 540710 },
+        NightElfFemale = { 541035, 541038, 541067, 541028, 541077 },
+        NightElfMale = { 541122, 541125, 541084, 541133, 541134, 541082, 541098, 541120 },
+        OrcFemale = { 541349, 541357, 541371, 541351, 541327, 541356 },
+        OrcMale = { 541433, 541432, 541403, 541397, 541422, 541409 },
+        TaurenFemale = { 542968, 542994, 542996, 542989 },
+        TaurenMale = { 543055, 543082, 543058, 543065, 543026 },
+        TrollFemale = { 543241, 543247, 543228, 543245, 543257 },
+        TrollMale = { 543315, 543285, 543323, 543337, 543329, 543327 },
+        UndeadFemale = { 542727, 542705, 542700, 542693, 542713, 542690, 542732, 542688 },
+        UndeadMale = { 542753, 542788, 542773, 542766, 542757 },
+        SkyborneFemale = { 7744915, 7744916, 7744917 },
+        SkyborneMale = { 7744509, 7930423, 7930426 },
     },
     moo = {
         -- /moo has dedicated player voice files only for Tauren.
@@ -165,7 +177,10 @@ local function DetectEmote(text)
 
     text = string.lower(text)
 
+    -- JOKE text from EmotesTextData: "tells a joke", "tells a joke to",
+    -- "tells you a joke", and the local "tell a joke" forms.
     if string.find(text, " tells a joke", 1, true)
+        or string.find(text, " tells you a joke", 1, true)
         or string.find(text, " tell a joke", 1, true) then
         return "joke"
     end
