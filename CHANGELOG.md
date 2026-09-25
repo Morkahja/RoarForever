@@ -2,6 +2,20 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.4.5 — 2026-09-26
+
+- Restored nearby-player voices for `/cry`, `/congrats` / `/congratulate`, and `/followme`.
+
+## 0.4.4 — 2026-09-26
+
+- Restored nearby-player voices for `/oom`, `/sigh`, and `/charge`.
+
+## 0.4.3 — 2026-09-26
+
+- Restored nearby-player voices for `/healme`, `/rasp`, and `/flirt`.
+- In a party or raid, only `/roar` is restored. The other voices are left to the game.
+- `/rf off` turns Roar Forever off. `/rf on` turns it back on.
+
 ## 0.4.2 — 2026-09-25
 
 - Restored nearby-player voices for `/flee` and `/retreat`. Both use the flee voice.

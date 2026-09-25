@@ -181,9 +181,191 @@ local voiceSounds = {
         SkyborneFemale = { 7744906, 7744907, 7744908 },
         SkyborneMale = { 7744500, 7744501, 7744502 },
     },
+    healme = {
+        DwarfFemale = { 540006, 540018, 539974 },
+        DwarfMale = { 540069, 540089, 540080 },
+        GnomeFemale = { 540439, 540431 },
+        GnomeMale = { 540478, 540504 },
+        HumanFemale = { 540642, 540647 },
+        HumanMale = { 540668, 540706 },
+        NightElfFemale = { 541078, 541034 },
+        NightElfMale = { 541131, 541111 },
+        OrcFemale = { 541345, 541336 },
+        OrcMale = { 541427, 541434 },
+        TaurenFemale = { 542992, 543020 },
+        TaurenMale = { 543075, 543028 },
+        TrollFemale = { 543231, 543262, 543265 },
+        TrollMale = { 543314, 543338, 543304 },
+        UndeadFemale = { 542692, 542728 },
+        UndeadMale = { 542765, 542748 },
+        SkyborneFemale = { 7744897, 7744898 },
+        SkyborneMale = { 7744492, 7744491 },
+    },
+    rasp = {
+        DwarfFemale = { 539995 },
+        DwarfMale = { 540083 },
+        -- The gnome female kit uses the same raspberry file as dwarf male.
+        GnomeFemale = { 540083 },
+        GnomeMale = { 540494 },
+        HumanFemale = { 540626 },
+        HumanMale = { 540695 },
+        NightElfFemale = { 541024 },
+        NightElfMale = { 541124 },
+        OrcFemale = { 541321 },
+        OrcMale = { 541414 },
+        TaurenFemale = { 542977 },
+        TaurenMale = { 543044 },
+        TrollFemale = { 543251 },
+        TrollMale = { 543317 },
+        UndeadFemale = { 542698 },
+        UndeadMale = { 542746 },
+        SkyborneFemale = { 7744914 },
+        SkyborneMale = { 7744508 },
+    },
+    flirt = {
+        DwarfFemale = { 539964, 540010, 539998, 539969, 540001 },
+        DwarfMale = { 540052, 540029, 540051, 540045, 540025, 540086 },
+        GnomeFemale = { 540444, 540427, 540454, 540409, 540406 },
+        GnomeMale = { 540484, 540470, 540508, 540503 },
+        HumanFemale = { 540612, 540625, 540648 },
+        HumanMale = { 540708, 540715, 540691, 540689, 540684, 540690 },
+        NightElfFemale = { 541056, 541044, 541059, 541060 },
+        NightElfMale = { 541091, 541129, 541118, 541105, 541110 },
+        OrcFemale = { 541363, 541368, 541346, 541350, 541344, 541341 },
+        OrcMale = { 541426, 541413, 541394, 541420, 541421, 541431 },
+        TaurenFemale = { 543010, 543004, 543019, 542975, 543007 },
+        TaurenMale = { 543031, 543077, 543052, 543064, 543033, 543037 },
+        TrollFemale = { 543272, 543278, 543269, 543232, 543274 },
+        TrollMale = { 543340, 543334, 543301, 543283 },
+        UndeadFemale = { 542682, 542720, 542711, 542734, 542704, 542706 },
+        UndeadMale = { 542759, 542754, 542742, 542760, 542786, 542777 },
+        SkyborneFemale = { 7744888, 7744889, 7744890 },
+        SkyborneMale = { 7744483, 7744484, 7744482 },
+    },
+    oom = {
+        DwarfFemale = { 539983, 539980 },
+        DwarfMale = { 540027, 540066 },
+        GnomeFemale = { 540442, 540455 },
+        GnomeMale = { 540498, 540518 },
+        HumanFemale = { 540645, 540644 },
+        HumanMale = { 540675, 540704 },
+        NightElfFemale = { 541036, 541040 },
+        NightElfMale = { 541117, 541104 },
+        OrcFemale = { 541372, 541373 },
+        OrcMale = { 541429, 541386 },
+        TaurenFemale = { 543006, 543001 },
+        TaurenMale = { 543049, 543053 },
+        TrollFemale = { 543242, 543234 },
+        TrollMale = { 543302, 543287 },
+        UndeadFemale = { 542687, 542686 },
+        UndeadMale = { 542772, 542778 },
+        SkyborneFemale = { 7744968, 7744969, 7744970 },
+        SkyborneMale = { 7744556, 7744557, 7744558 },
+    },
+    sigh = {
+        DwarfFemale = { 539794 },
+        DwarfMale = { 539873 },
+        GnomeFemale = { 540266 },
+        GnomeMale = { 540277 },
+        HumanFemale = { 540524 },
+        HumanMale = { 540729 },
+        NightElfFemale = { 540865 },
+        NightElfMale = { 540952 },
+        OrcFemale = { 541151 },
+        OrcMale = { 541236 },
+        TaurenFemale = { 542813 },
+        TaurenMale = { 542900 },
+        TrollFemale = { 543089 },
+        TrollMale = { 543088 },
+        UndeadFemale = { 542524 },
+        UndeadMale = { 542610 },
+        SkyborneFemale = { 8036503, 8036505, 8036507, 8036509 },
+        SkyborneMale = { 8062308, 8062305 },
+    },
+    charge = {
+        DwarfFemale = { 540007, 539986 },
+        DwarfMale = { 540085, 540088 },
+        GnomeFemale = { 540425, 540452 },
+        GnomeMale = { 540491, 540509, 540515 },
+        HumanFemale = { 540623, 540618 },
+        HumanMale = { 540696, 540717 },
+        NightElfFemale = { 541023, 541026, 541025 },
+        NightElfMale = { 541081, 541092 },
+        OrcFemale = { 541367, 541342, 541354 },
+        OrcMale = { 541389, 541391, 541400 },
+        TaurenFemale = { 543008, 543002 },
+        TaurenMale = { 543040, 543071, 543057 },
+        TrollFemale = { 543254, 543266 },
+        TrollMale = { 543284, 543293 },
+        UndeadFemale = { 542712, 542725 },
+        UndeadMale = { 542762, 542738 },
+        SkyborneFemale = { 7744882, 7744883 },
+        SkyborneMale = { 7744476, 7744475 },
+    },
+    cry = {
+        DwarfFemale = { 539792 },
+        DwarfMale = { 539875 },
+        GnomeFemale = { 540273 },
+        GnomeMale = { 540264 },
+        HumanFemale = { 540533 },
+        HumanMale = { 540736 },
+        NightElfFemale = { 540873 },
+        NightElfMale = { 540957 },
+        OrcFemale = { 541149 },
+        OrcMale = { 541240 },
+        TaurenFemale = { 542815 },
+        TaurenMale = { 542887 },
+        TrollFemale = { 543084 },
+        TrollMale = { 543090 },
+        UndeadFemale = { 542519 },
+        UndeadMale = { 542601 },
+        SkyborneFemale = { 8036417, 8036419 },
+        SkyborneMale = { 8062218, 8062220, 8062222 },
+    },
+    congrats = {
+        DwarfFemale = { 539981, 539994, 539965, 540008 },
+        DwarfMale = { 540065, 540058, 540039, 540042, 540063 },
+        GnomeFemale = { 540432, 540449, 540420, 540415 },
+        GnomeMale = { 540476, 540501, 540512 },
+        HumanFemale = { 540654, 540640, 540655 },
+        HumanMale = { 540703, 540676, 540712 },
+        NightElfFemale = { 541045, 541031, 541033 },
+        NightElfMale = { 541085, 541103, 541136 },
+        OrcFemale = { 541317, 541358, 541332 },
+        OrcMale = { 541396, 541401, 541423 },
+        TaurenFemale = { 542997, 542981, 542995 },
+        TaurenMale = { 543038, 543070, 543027 },
+        TrollFemale = { 543273, 543233, 543243 },
+        TrollMale = { 543307, 543291, 543336 },
+        UndeadFemale = { 542684, 542694, 542724, 542726 },
+        UndeadMale = { 542747, 542775, 542735 },
+        SkyborneFemale = { 7997839, 7997842 },
+        SkyborneMale = { 7997833, 7997836 },
+    },
+    followme = {
+        DwarfFemale = { 540004, 539997 },
+        DwarfMale = { 540057, 540053, 540043 },
+        GnomeFemale = { 540419 },
+        GnomeMale = { 540474, 540486 },
+        HumanFemale = { 540631, 540653 },
+        HumanMale = { 540711, 540705 },
+        NightElfFemale = { 541066, 541057 },
+        NightElfMale = { 541086, 541107 },
+        OrcFemale = { 541337, 541362 },
+        OrcMale = { 541410, 541387 },
+        TaurenFemale = { 542972, 542986 },
+        TaurenMale = { 543048, 543050 },
+        TrollFemale = { 543258, 543264 },
+        TrollMale = { 543288, 543339 },
+        UndeadFemale = { 542695, 542714 },
+        UndeadMale = { 542744, 542771 },
+        SkyborneFemale = { 7744891, 7744892, 7744893 },
+        SkyborneMale = { 7744487, 7744486, 7744485 },
+    },
 }
 
 voiceSounds.retreat = voiceSounds.flee
+voiceSounds.congratulate = voiceSounds.congrats
 
 local function NormalizeName(name)
     if not name then
@@ -316,6 +498,54 @@ local function DetectEmote(text)
         return "no"
     end
 
+    if string.find(text, " for healing", 1, true) then
+        return "healme"
+    end
+
+    -- /rasp and /rude share this line. The voice kit belongs to /rasp.
+    if string.find(text, " rude gesture", 1, true) then
+        return "rasp"
+    end
+
+    if string.find(text, " flirts", 1, true)
+        or string.find(text, "you flirt", 1, true) == 1 then
+        return "flirt"
+    end
+
+    if string.find(text, " mana", 1, true) then
+        return "oom"
+    end
+
+    -- Match the sigh lines only. "sight" contains the same letters.
+    if string.find(text, " sighs", 1, true)
+        or string.find(text, "you sigh", 1, true) == 1
+        or string.find(text, " sigh.", 1, true) then
+        return "sigh"
+    end
+
+    if string.find(text, " to charge", 1, true) then
+        return "charge"
+    end
+
+    -- /cry only. "cries out for help" is /helpme, which has its own voice.
+    if string.find(text, " cries on", 1, true)
+        or string.find(text, " cries.", 1, true)
+        or string.find(text, "you cry on", 1, true) == 1
+        or text == "you cry." then
+        return "cry"
+    end
+
+    -- /congrats and /congratulate. The level-up ding line is separate.
+    if (string.find(text, " congratulates", 1, true)
+        or string.find(text, "you congratulate", 1, true) == 1)
+        and not string.find(text, "ding", 1, true) then
+        return "congrats"
+    end
+
+    if string.find(text, " to follow", 1, true) then
+        return "followme"
+    end
+
     return nil
 end
 
@@ -350,6 +580,35 @@ local function FindUnitBySender(sender)
     end
 
     return nil
+end
+
+local function AddonEnabled()
+    return not RoarForeverDB or RoarForeverDB.enabled ~= false
+end
+
+local function SetAddonEnabled(enabled)
+    if type(RoarForeverDB) ~= "table" then
+        RoarForeverDB = {}
+    end
+
+    RoarForeverDB.enabled = enabled and true or false
+end
+
+local function IsGroupedSender(sender)
+    if not IsInGroup or not IsInGroup() then
+        return false
+    end
+
+    local unit = FindUnitBySender(sender)
+    if not unit then
+        return false
+    end
+
+    if IsInRaid and IsInRaid() then
+        return UnitInRaid and UnitInRaid(unit)
+    end
+
+    return UnitInParty and UnitInParty(unit)
 end
 
 local function IsLocalPlayer(sender, guid)
@@ -396,6 +655,10 @@ frame:SetScript("OnEvent", function(self, event, ...)
         return
     end
 
+    if not AddonEnabled() then
+        return
+    end
+
     local text, sender, _, _, _, _, _, _, _, _, _, guid = ...
     local emoteName = DetectEmote(text)
 
@@ -403,9 +666,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
         return
     end
 
-    -- Forever already plays the local player's normal voiced emotes. Roar is
-    -- the exception this addon was originally created to restore locally too.
-    if emoteName ~= "roar" and IsLocalPlayer(sender, guid) then
+    -- The client already plays normal voiced emotes for you, and for party
+    -- and raid members. Roar is still missing in those cases, so it stays on.
+    if emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender)) then
         return
     end
 
@@ -427,6 +690,18 @@ SLASH_ROARFOREVER2 = "/rf"
 SlashCmdList.ROARFOREVER = function(msg)
     msg = string.lower((msg or ""):match("^%s*(.-)%s*$"))
 
+    if msg == "off" or msg == "disable" then
+        SetAddonEnabled(false)
+        print("Roar Forever is off. /rf on turns it back on.")
+        return
+    end
+
+    if msg == "on" or msg == "enable" then
+        SetAddonEnabled(true)
+        print("Roar Forever is on.")
+        return
+    end
+
     local testEmote = msg:match("^test%s*(%a*)$")
     if testEmote then
         if testEmote == "" then
@@ -435,7 +710,7 @@ SlashCmdList.ROARFOREVER = function(msg)
 
         if not voiceSounds[testEmote] then
             print("Roar Forever: unknown test emote '" .. testEmote .. "'.")
-            print("Roar Forever: test options are roar, cheer, laugh, joke, moo, flee, retreat, welcome, yes, no.")
+            print("Roar Forever: test options are roar, cheer, laugh, joke, moo, flee, retreat, welcome, yes, no, healme, rasp, flirt, oom, sigh, charge, cry, congrats, congratulate, followme.")
             return
         end
 
@@ -467,7 +742,8 @@ SlashCmdList.ROARFOREVER = function(msg)
         end
 
         table.sort(mapped)
-        print("Roar Forever: detected " .. voiceKey .. "; mapped emotes: " .. (#mapped > 0 and table.concat(mapped, ", ") or "none"))
+        local state = AddonEnabled() and "on" or "off"
+        print("Roar Forever is " .. state .. ". Detected " .. voiceKey .. "; mapped emotes: " .. (#mapped > 0 and table.concat(mapped, ", ") or "none"))
         return
     end
 
@@ -479,5 +755,5 @@ SlashCmdList.ROARFOREVER = function(msg)
         return
     end
 
-    print("Roar Forever: /rf test [roar|cheer|laugh|joke|moo|flee|retreat|welcome|yes|no] | /rf status | /rf id <FileDataID>")
+    print("Roar Forever: /rf on | /rf off | /rf test [emote] | /rf status | /rf id <FileDataID>")
 end
