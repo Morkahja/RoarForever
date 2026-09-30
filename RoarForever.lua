@@ -443,11 +443,15 @@ local function GetVoiceKeyForUnit(unit)
 end
 
 local function GetVoiceKeyForGUID(guid)
-    if not guid or not GetPlayerInfoByGUID then
+    if type(guid) ~= "string" or guid == "" or not GetPlayerInfoByGUID then
         return nil
     end
 
-    local _, _, _, raceFile, sex = GetPlayerInfoByGUID(guid)
+    local ok, _, _, _, raceFile, sex = pcall(GetPlayerInfoByGUID, guid)
+    if not ok then
+        return nil
+    end
+
     return BuildVoiceKey(raceFile, sex)
 end
 
@@ -622,6 +626,34 @@ local function FindUnitBySender(sender)
     return nil
 end
 
+local function FindGroupedUnitByGUID(guid)
+    if type(guid) ~= "string" or guid == "" then
+        return nil
+    end
+
+    if not IsInGroup or not IsInGroup() then
+        return nil
+    end
+
+    if IsInRaid and IsInRaid() then
+        for i = 1, 40 do
+            local unit = "raid" .. i
+            if UnitExists(unit) and UnitGUID(unit) == guid then
+                return unit
+            end
+        end
+    else
+        for i = 1, 4 do
+            local unit = "party" .. i
+            if UnitExists(unit) and UnitGUID(unit) == guid then
+                return unit
+            end
+        end
+    end
+
+    return nil
+end
+
 local function AddonEnabled()
     return not RoarForeverDB or RoarForeverDB.enabled ~= false
 end
@@ -634,21 +666,25 @@ local function SetAddonEnabled(enabled)
     RoarForeverDB.enabled = enabled and true or false
 end
 
-local function IsGroupedSender(sender)
+local function IsGroupedSender(sender, guid)
     if not IsInGroup or not IsInGroup() then
         return false
     end
 
+    if FindGroupedUnitByGUID(guid) then
+        return true
+    end
+
     local unit = FindUnitBySender(sender)
-    if not unit then
+    if not unit or unit == "player" then
         return false
     end
 
     if IsInRaid and IsInRaid() then
-        return UnitInRaid and UnitInRaid(unit)
+        return UnitInRaid(unit) ~= nil
     end
 
-    return UnitInParty and UnitInParty(unit)
+    return UnitInParty(unit) and true or false
 end
 
 local function IsLocalPlayer(sender, guid)
@@ -682,7 +718,7 @@ local function GetSenderVoiceKey(sender, guid)
         return voiceKey
     end
 
-    local unit = FindUnitBySender(sender)
+    local unit = FindGroupedUnitByGUID(guid) or FindUnitBySender(sender)
     if unit then
         return GetVoiceKeyForUnit(unit)
     end
@@ -699,7 +735,12 @@ frame:SetScript("OnEvent", function(self, event, ...)
         return
     end
 
-    local text, sender, _, _, _, _, _, _, _, _, _, guid = ...
+    local text, sender = ...
+    local guid = select(12, ...)
+    if type(guid) ~= "string" or guid == "" then
+        guid = nil
+    end
+
     local emoteName = DetectEmote(text)
 
     if not emoteName then
@@ -713,7 +754,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
         if IsLocalPlayer(sender, guid) then
             return
         end
-    elseif emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender)) then
+    elseif emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender, guid)) then
         return
     end
 

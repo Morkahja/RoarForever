@@ -2,6 +2,10 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.4.7 — 2026-09-30
+
+- Fixed a Lua error that could fire when a party or raid member used a voiced emote such as `/oom`.
+
 ## 0.4.6 — 2026-09-26
 
 - `/train` now sends "blows a train whistle. Choo choo!" so other people using Roar Forever can hear it, including in a party or raid.
