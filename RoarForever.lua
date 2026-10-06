@@ -1,3 +1,4 @@
+local _, RF = ...
 local frame = CreateFrame("Frame")
 
 local EMOTE_COOLDOWN = 0.30
@@ -467,142 +468,82 @@ local function PlayEmoteByKey(emoteName, voiceKey)
     return willPlay and true or false, fileDataID
 end
 
-local function DetectEmote(text)
-    if not text then
-        return nil
-    end
-
-    text = string.lower(text)
-
-    -- JOKE text from EmotesTextData: "tells a joke", "tells a joke to",
-    -- "tells you a joke", and the local "tell a joke" forms.
-    if string.find(text, " tells a joke", 1, true)
-        or string.find(text, " tells you a joke", 1, true)
-        or string.find(text, " tell a joke", 1, true) then
-        return "joke"
-    end
-
-    if string.find(text, " roars", 1, true)
-        or string.find(text, " roar", 1, true) then
-        return "roar"
-    end
-
-    if string.find(text, " cheers", 1, true)
-        or string.find(text, "you cheer", 1, true) == 1 then
-        return "cheer"
-    end
-
-    if string.find(text, " laughs", 1, true)
-        or string.find(text, "you laugh", 1, true) == 1 then
-        return "laugh"
-    end
-
-    -- Untargeted /moo is just "Mooooooooooo." while targeted /moo contains
-    -- normal emote text followed by the same long moo.
-    if string.find(text, " moos", 1, true)
-        or string.find(text, "you moo", 1, true) == 1
-        or string.find(text, "mooooo", 1, true) then
-        return "moo"
-    end
-
-    -- /flee and /retreat share the flee voice. Forever's flee lines all say
-    -- "to flee". A retreat line is matched on its own wording.
-    if string.find(text, " to flee", 1, true)
-        or string.find(text, " retreat", 1, true)
-        or string.find(text, "you retreat", 1, true) == 1 then
-        return "flee"
-    end
-
-    if string.find(text, " welcomes", 1, true)
-        or string.find(text, "you welcome", 1, true) == 1 then
-        return "welcome"
-    end
-
-    -- /yes is the nod emote. The spoken lines are the Yes voice files.
-    if string.find(text, " nods", 1, true)
-        or string.find(text, "you nod", 1, true) == 1 then
-        return "yes"
-    end
-
-    if string.find(text, " no.", 1, true)
-        or string.find(text, "states, no", 1, true)
-        or string.find(text, "state, no", 1, true) then
-        return "no"
-    end
-
-    if string.find(text, " for healing", 1, true) then
-        return "healme"
-    end
-
-    -- /rasp and /rude share this line. The voice kit belongs to /rasp.
-    if string.find(text, " rude gesture", 1, true) then
-        return "rasp"
-    end
-
-    if string.find(text, " flirts", 1, true)
-        or string.find(text, "you flirt", 1, true) == 1 then
-        return "flirt"
-    end
-
-    if string.find(text, " mana", 1, true) then
-        return "oom"
-    end
-
-    -- Match the sigh lines only. "sight" contains the same letters.
-    if string.find(text, " sighs", 1, true)
-        or string.find(text, "you sigh", 1, true) == 1
-        or string.find(text, " sigh.", 1, true) then
-        return "sigh"
-    end
-
-    if string.find(text, " to charge", 1, true) then
-        return "charge"
-    end
-
-    -- /cry only. "cries out for help" is /helpme, which has its own voice.
-    if string.find(text, " cries on", 1, true)
-        or string.find(text, " cries.", 1, true)
-        or string.find(text, "you cry on", 1, true) == 1
-        or text == "you cry." then
-        return "cry"
-    end
-
-    -- /congrats and /congratulate. The level-up ding line is separate.
-    if (string.find(text, " congratulates", 1, true)
-        or string.find(text, "you congratulate", 1, true) == 1)
-        and not string.find(text, "ding", 1, true) then
-        return "congrats"
-    end
-
-    if string.find(text, " to follow", 1, true) then
-        return "followme"
-    end
-
-    if string.find(text, " whistles", 1, true)
-        or string.find(text, "you whistle", 1, true) == 1
-        or string.find(text, " sharp whistle", 1, true) then
-        return "whistle"
-    end
-
-    -- Sent by this addon when the player uses /train. "Achoo" is a sneeze.
-    if string.find(text, "choo choo", 1, true)
-        or string.find(text, "train whistle", 1, true) then
-        return "train"
-    end
-
-    return nil
+-- Normalize chat formatting without lowercasing UTF-8 names or translated text.
+local function NormalizeText(text)
+    return (text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+        :gsub("|H.-|h(.-)|h", "%1"):gsub(" ", " "):gsub(" ", " ")
+        :gsub("’", "'"):gsub("%s+", " "):match("^%s*(.-)%s*$"))
 end
 
-local function FindUnitBySender(sender)
-    local wanted = NormalizeName(sender)
+local function TemplatePattern(template)
+    -- Russian declined names and French de/d' prefixes are rendered by WoW.
+    template = template:gsub("|3%-%d%((.-)%)", "%1"):gsub("|2%s*", "")
+    template = NormalizeText(template)
+    template = template:gsub("%%[12]%$s", "%%s")
+    local parts, pos = {"^"}, 1
+    while true do
+        local first, last = template:find("%s", pos, true)
+        local literal = template:sub(pos, first and first - 1 or #template)
+        parts[#parts + 1] = literal:gsub("([%%%^%$%(%)%.%[%]%*%+%-%?])", "%%%1")
+        if not first then break end
+        parts[#parts + 1] = ".+"
+        pos = last + 1
+    end
+    return table.concat(parts) .. "$"
+end
+
+local patterns = {}
+for _, entry in ipairs(RF.locale.templates) do
+    patterns[#patterns + 1] = {entry[1], TemplatePattern(entry[2])}
+end
+
+local TRAIN_LINE = "blows a train whistle. Choo choo!"
+local function DetectEmote(text, event, sender)
+    if type(text) ~= "string" then return nil end
+    text = NormalizeText(text)
+    if event == "CHAT_MSG_EMOTE" then
+        -- Custom emotes are arbitrary prose. Accept only our exact train message.
+        if text == TRAIN_LINE or text == (sender or "") .. " " .. TRAIN_LINE
+            or text == (NormalizeName(sender) or "") .. " " .. TRAIN_LINE then
+            return "train"
+        end
+        return nil
+    end
+    for _, entry in ipairs(patterns) do
+        if text:match(entry[2]) then
+            -- Intentionally retain the existing ding exclusion, including names.
+            if entry[1] == "congrats" and text:lower():find("ding", 1, true) then
+                return nil
+            end
+            return entry[1]
+        end
+    end
+end
+
+local function FindUnitBySender(sender, guid)
+    local wanted = sender
     if not wanted then
         return nil
     end
 
+    local function Matches(unit)
+        if not UnitExists(unit) then return false end
+        if guid then return UnitGUID(unit) == guid end
+        local name, realm
+        if UnitFullName then name, realm = UnitFullName(unit) end
+        if not name then name, realm = UnitName(unit) end
+        if sender:find("-", 1, true) then
+            if not realm or realm == "" then
+                realm = GetNormalizedRealmName and GetNormalizedRealmName()
+            end
+            return realm and name .. "-" .. realm == wanted
+        end
+        return name == wanted
+    end
     local units = { "player", "target", "mouseover", "focus" }
 
     for _, unit in ipairs(units) do
-        if UnitExists(unit) and NormalizeName(UnitName(unit)) == wanted then
+        if Matches(unit) then
             return unit
         end
     end
@@ -610,14 +551,14 @@ local function FindUnitBySender(sender)
     if IsInRaid and IsInRaid() then
         for i = 1, 40 do
             local unit = "raid" .. i
-            if UnitExists(unit) and NormalizeName(UnitName(unit)) == wanted then
+            if Matches(unit) then
                 return unit
             end
         end
     elseif IsInGroup and IsInGroup() then
         for i = 1, 4 do
             local unit = "party" .. i
-            if UnitExists(unit) and NormalizeName(UnitName(unit)) == wanted then
+            if Matches(unit) then
                 return unit
             end
         end
@@ -654,16 +595,48 @@ local function FindGroupedUnitByGUID(guid)
     return nil
 end
 
+local function SettingsDB()
+    if type(RoarForeverDB) ~= "table" then RoarForeverDB = {} end
+    if type(RoarForeverDB.emotes) ~= "table" then RoarForeverDB.emotes = {} end
+    return RoarForeverDB
+end
+
 local function AddonEnabled()
-    return not RoarForeverDB or RoarForeverDB.enabled ~= false
+    return SettingsDB().enabled ~= false
 end
 
 local function SetAddonEnabled(enabled)
-    if type(RoarForeverDB) ~= "table" then
-        RoarForeverDB = {}
-    end
+    SettingsDB().enabled = enabled and true or false
+end
 
-    RoarForeverDB.enabled = enabled and true or false
+local function EmoteEnabled(emote)
+    return SettingsDB().emotes[emote] ~= false
+end
+
+RF.SettingsDB = SettingsDB
+RF.AddonEnabled = AddonEnabled
+RF.SetAddonEnabled = SetAddonEnabled
+RF.EmoteEnabled = EmoteEnabled
+
+local previewHandle
+local previewPools = {}
+function RF.Preview(emote)
+    local pool = previewPools[emote]
+    if not pool then
+        pool = {}
+        local seen = {}
+        for _, sounds in pairs(voiceSounds[emote] or {}) do
+            for _, id in ipairs(sounds) do
+                if not seen[id] then pool[#pool + 1] = id; seen[id] = true end
+            end
+        end
+        previewPools[emote] = pool
+    end
+    if #pool == 0 then return false end
+    if previewHandle and StopSound then StopSound(previewHandle) end
+    local ok, handle = PlaySoundFile(pool[math.random(#pool)], "Master")
+    previewHandle = handle
+    return ok
 end
 
 local function IsGroupedSender(sender, guid)
@@ -675,7 +648,7 @@ local function IsGroupedSender(sender, guid)
         return true
     end
 
-    local unit = FindUnitBySender(sender)
+    local unit = FindUnitBySender(sender, guid)
     if not unit or unit == "player" then
         return false
     end
@@ -688,14 +661,8 @@ local function IsGroupedSender(sender, guid)
 end
 
 local function IsLocalPlayer(sender, guid)
-    local playerGUID = UnitGUID("player")
-    if guid and playerGUID and guid == playerGUID then
-        return true
-    end
-
-    local senderName = NormalizeName(sender)
-    local playerName = NormalizeName(UnitName("player"))
-    return senderName and playerName and senderName == playerName
+    if guid then return guid == UnitGUID("player") end
+    return FindUnitBySender(sender) == "player"
 end
 
 local function CanPlayForSender(sender, guid, emoteName)
@@ -718,7 +685,7 @@ local function GetSenderVoiceKey(sender, guid)
         return voiceKey
     end
 
-    local unit = FindGroupedUnitByGUID(guid) or FindUnitBySender(sender)
+    local unit = FindGroupedUnitByGUID(guid) or FindUnitBySender(sender, guid)
     if unit then
         return GetVoiceKeyForUnit(unit)
     end
@@ -741,9 +708,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
         guid = nil
     end
 
-    local emoteName = DetectEmote(text)
+    local emoteName = DetectEmote(text, event, sender)
 
-    if not emoteName then
+    if not emoteName or not EmoteEnabled(emoteName) then
         return
     end
 
@@ -776,6 +743,11 @@ SLASH_ROARFOREVER2 = "/rf"
 
 SlashCmdList.ROARFOREVER = function(msg)
     msg = string.lower((msg or ""):match("^%s*(.-)%s*$"))
+
+    if msg == "" or msg == "config" or msg == "ui" then
+        RF.OpenOptions()
+        return
+    end
 
     if msg == "off" or msg == "disable" then
         SetAddonEnabled(false)
@@ -847,7 +819,6 @@ end
 
 -- Forever never announces /train. Take over the slash command, play the real
 -- train emote, then send a custom /e line other Roar Forever clients can hear.
-local TRAIN_LINE = "blows a train whistle. Choo choo!"
 local lastTrainAnnounce = 0
 
 local function SendEmoteLine(text)
@@ -859,7 +830,7 @@ local function SendEmoteLine(text)
 end
 
 local function AnnounceTrain()
-    if not AddonEnabled() then
+    if not AddonEnabled() or not EmoteEnabled("train") or SettingsDB().announceTrain == false then
         return
     end
 

@@ -2,6 +2,20 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.5.0 — 2026-10-07
+
+- Added a movable Warcraft-style options window, opened with `/rf` or `/rf config`.
+- Added individual switches for all 20 supported emote categories. Aliases share one switch.
+- Added speaker buttons that preview a random mapped sound across all races and genders, including the full joke and flirt pools. Previews work with automatic playback disabled and never send chat messages.
+- Added a separate switch for the `/train` chat announcement. Turning it off leaves the native train emote available.
+- Bundled English, German, French, Spanish, and Russian emote detection and menu labels; English GB and Spanish MX use their corresponding language packs.
+- Replaced broad keyword detection with full client-message templates from Forever build 1.60.1.70009. Custom emote chat is accepted only for the exact train announcement.
+- Fixed player identity checks so a different GUID cannot be mistaken for the local player or a group member just because names match.
+- Kept the existing congratulations `ding` exclusion unchanged.
+- Settings use the existing account-wide `RoarForeverDB`; prior on/off settings are preserved and new switches default to on.
+
+Validation: Lua 5.1 checks cover 593 localized template cases and options, previews, train announcements, saved-option loading, and identity regressions. Actual translated-client behavior and UI appearance still require in-game validation.
+
 ## 0.4.7 — 2026-09-30
 
 - Fixed a Lua error that could fire when a party or raid member used a voiced emote such as `/oom`.
