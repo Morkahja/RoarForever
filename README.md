@@ -32,7 +32,7 @@ These switches control voices added by Roar Forever. They do not silence voices 
 - `/congrats` / `/congratulate` — restores a random congratulations line for other players.
 - `/followme` — restores the follow-me voice for other players.
 - `/whistle` — restores the whistle for other players.
-- `/train` — Roar Forever takes over `/train`, plays the normal choo-choo, and also sends "blows a train whistle. Choo choo!" Other people using Roar Forever hear the train voice from that line, including group members.
+- `/train` — Roar Forever takes over `/train`, plays the normal choo-choo, and also sends "blows a train whistle. Choo choo!" Nearby players outside your group who use Roar Forever hear the train voice from that line. In a party or raid it is left to the game, like the other non-roar voices.
 
 Roar Forever does not replay your own normal voiced emotes, because the client already plays those. `/roar` is the exception. In a party or raid, the client already plays the other voices for group members, so Roar Forever restores only `/roar` there. Nearby players who are not in your group still get the full set.
 

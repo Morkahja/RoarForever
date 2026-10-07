@@ -2,6 +2,10 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.5.1-beta — 2026-10-07
+
+- Stopped group-member `/train` from playing twice. Like the other non-roar voices, train is left to the game in a party or raid.
+
 ## 0.5.0-beta — 2026-10-07
 
 - Added a movable Warcraft-style options window, opened with `/rf` or `/rf config`.

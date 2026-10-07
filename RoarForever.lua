@@ -715,13 +715,10 @@ frame:SetScript("OnEvent", function(self, event, ...)
     end
 
     -- The client already plays normal voiced emotes for you, and for party
-    -- and raid members. Roar stays on. /train has no game text, so the line
-    -- this addon sends is played for other people even in a group.
-    if emoteName == "train" then
-        if IsLocalPlayer(sender, guid) then
-            return
-        end
-    elseif emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender, guid)) then
+    -- and raid members, including /train. Roar is still missing there, so
+    -- only /roar is restored for yourself and for group members. The custom
+    -- train chat line is still used for nearby players outside your group.
+    if emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender, guid)) then
         return
     end
 
