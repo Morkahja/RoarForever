@@ -2,7 +2,7 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
-## 0.5.0 — 2026-10-07
+## 0.5.0-beta — 2026-10-07
 
 - Added a movable Warcraft-style options window, opened with `/rf` or `/rf config`.
 - Added individual switches for all 20 supported emote categories. Aliases share one switch.
