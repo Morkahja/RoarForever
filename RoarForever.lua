@@ -1,7 +1,7 @@
 local _, RF = ...
 local frame = CreateFrame("Frame")
 
-local EMOTE_COOLDOWN = 0.30
+local EMOTE_COOLDOWN = 0.07
 local lastPlayTimeBySenderAndEmote = {}
 
 -- Blizzard FileDataIDs for player-character voice emotes.
@@ -481,6 +481,22 @@ local function GetVoiceKeyForGUID(guid)
     return BuildVoiceKey(raceFile, sex)
 end
 
+-- One active restored voice at a time so rapid repeats restart instead of stacking.
+local lastSoundHandle
+
+local function PlaySoundFileExclusive(fileDataID)
+    if lastSoundHandle and StopSound then
+        StopSound(lastSoundHandle)
+        lastSoundHandle = nil
+    end
+
+    local willPlay, handle = PlaySoundFile(fileDataID, "Master")
+    if willPlay then
+        lastSoundHandle = handle
+    end
+    return willPlay and true or false, handle
+end
+
 local function PlayEmoteByKey(emoteName, voiceKey)
     local emoteMap = voiceSounds[emoteName]
     local sounds = emoteMap and emoteMap[voiceKey]
@@ -489,8 +505,8 @@ local function PlayEmoteByKey(emoteName, voiceKey)
     end
 
     local fileDataID = sounds[math.random(#sounds)]
-    local willPlay = PlaySoundFile(fileDataID, "Master")
-    return willPlay and true or false, fileDataID
+    local willPlay = PlaySoundFileExclusive(fileDataID)
+    return willPlay, fileDataID
 end
 
 -- Normalize chat formatting without lowercasing UTF-8 names or translated text.
@@ -680,7 +696,6 @@ RF.AddonEnabled = AddonEnabled
 RF.SetAddonEnabled = SetAddonEnabled
 RF.EmoteEnabled = EmoteEnabled
 
-local previewHandle
 local previewPools = {}
 function RF.Preview(emote)
     local pool = previewPools[emote]
@@ -695,10 +710,7 @@ function RF.Preview(emote)
         previewPools[emote] = pool
     end
     if #pool == 0 then return false end
-    if previewHandle and StopSound then StopSound(previewHandle) end
-    local ok, handle = PlaySoundFile(pool[math.random(#pool)], "Master")
-    previewHandle = handle
-    return ok
+    return PlaySoundFileExclusive(pool[math.random(#pool)])
 end
 
 local function IsGroupedSender(sender, guid)

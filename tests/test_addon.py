@@ -136,7 +136,14 @@ event('CHAT_MSG_TEXT_EMOTE','Other cheers!','Other','Player-other'); assert(#sou
 RF.SetAddonEnabled(false); now=102
 event('CHAT_MSG_TEXT_EMOTE','Other roars with bestial vigor. So fierce!','Other','Player-other'); assert(#sounds==1)
 -- Preview works even while automatic playback is disabled and sends no chat.
-RF.Preview('cheer'); RF.Preview('joke'); assert(#sounds==3 and #stopped==1 and #sent==0)
+RF.Preview('cheer'); RF.Preview('joke'); assert(#sounds==3 and #stopped==2 and #sent==0)
+-- Rapid restored playback restarts: previous handle is stopped so voices do not overlap.
+RF.SetAddonEnabled(true); RF.SettingsDB().emotes.cheer=true; RF.SettingsDB().emotes.roar=true
+now=102.5; event('CHAT_MSG_TEXT_EMOTE','Other roars with bestial vigor. So fierce!','Other','Player-other')
+local roarHandle=#sounds
+now=103; event('CHAT_MSG_TEXT_EMOTE','Other roars with bestial vigor. So fierce!','Other','Player-other')
+assert(#sounds==roarHandle+1 and stopped[#stopped]==roarHandle)
+RF.SetAddonEnabled(false); RF.SettingsDB().emotes.cheer=false
 local pools=upvalue(RF.Preview,'previewPools')
 assert(#pools.joke>60 and #pools.cheer>16)
 RF.OpenOptions()
@@ -153,19 +160,19 @@ SlashCmdList.ROARFOREVERTRAIN(); assert(#sent==1 and sent[1].text=='blows a trai
 now=104; RF.SettingsDB().emotes.train=false
 SlashCmdList.ROARFOREVERTRAIN(); assert(#sent==1)
 grouped=true; units.party1={name='Friend',realm='Home',guid='Player-friend'}
-now=105; event('CHAT_MSG_TEXT_EMOTE','Friend cheers!','Friend','Player-friend'); assert(#sounds==3)
+now=105; event('CHAT_MSG_TEXT_EMOTE','Friend cheers!','Friend','Player-friend'); assert(#sounds==5)
 units.target={name='Friend',realm='Away',guid='Player-stranger'}
-now=106; event('CHAT_MSG_TEXT_EMOTE','Friend cheers!','Friend','Player-stranger'); assert(#sounds==4)
+now=106; event('CHAT_MSG_TEXT_EMOTE','Friend cheers!','Friend','Player-stranger'); assert(#sounds==6)
 -- Self/group roar still plays for races without a client roar.
-now=107; event('CHAT_MSG_TEXT_EMOTE','You roar with bestial vigor. So fierce!','Tester','Player-self'); assert(#sounds==5)
-now=108; event('CHAT_MSG_TEXT_EMOTE','Friend roars with bestial vigor. So fierce!','Friend','Player-friend'); assert(#sounds==6)
+now=107; event('CHAT_MSG_TEXT_EMOTE','You roar with bestial vigor. So fierce!','Tester','Player-self'); assert(#sounds==7)
+now=108; event('CHAT_MSG_TEXT_EMOTE','Friend roars with bestial vigor. So fierce!','Friend','Player-friend'); assert(#sounds==8)
 -- Skyborne already have a client roar: leave self and group to the game.
 guidRace['Player-self']='Skyborne'; guidRace['Player-friend']='Skyborne'
-now=109; event('CHAT_MSG_TEXT_EMOTE','You roar with bestial vigor. So fierce!','Tester','Player-self'); assert(#sounds==6)
-now=110; event('CHAT_MSG_TEXT_EMOTE','Friend roars with bestial vigor. So fierce!','Friend','Player-friend'); assert(#sounds==6)
+now=109; event('CHAT_MSG_TEXT_EMOTE','You roar with bestial vigor. So fierce!','Tester','Player-self'); assert(#sounds==8)
+now=110; event('CHAT_MSG_TEXT_EMOTE','Friend roars with bestial vigor. So fierce!','Friend','Player-friend'); assert(#sounds==8)
 -- Nearby non-grouped Skyborne roar is still restored.
 guidRace['Player-stranger']='Skyborne'
-now=111; event('CHAT_MSG_TEXT_EMOTE','Friend roars with bestial vigor. So fierce!','Friend','Player-stranger'); assert(#sounds==7)
+now=111; event('CHAT_MSG_TEXT_EMOTE','Friend roars with bestial vigor. So fierce!','Friend','Player-stranger'); assert(#sounds==9)
 -- /forthehorde: Horde orc plays locally via DoEmote hook; Alliance is refused.
 guidRace['Player-self']='Orc'; guidRace['Player-friend']='Orc'; guidRace['Player-stranger']='Orc'; guidRace['Player-other']='Orc'
 playerFaction='Alliance'; local beforeSent=#sent; local beforeSounds=#sounds

@@ -10,7 +10,7 @@ Open `/rf` or `/rf config` for a movable Warcraft-style menu. Toggle individual 
 
 Each speaker button plays one randomly selected sound for that emote from all mapped races and genders. It does not use only your character's voice. Previews work even if that emote or the addon is switched off, never send chat, and stop the previous preview when you choose another.
 
-These switches control voices added by Roar Forever. They do not silence voices that WoW itself plays. In particular, turning off the chat announcement does not disable the native `/train` animation or voice.
+These switches control which built-in game voice-emote sounds Roar Forever restores. They do not silence voices that WoW itself plays. In particular, turning off the chat announcement does not disable the native `/train` animation or voice.
 
 ## Restored emotes
 

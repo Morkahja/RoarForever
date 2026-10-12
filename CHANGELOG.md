@@ -2,6 +2,12 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.5.7-beta — 2026-10-12
+
+- Clarified the options note: Roar Forever restores built-in World of Warcraft voice-emote sounds; it does not add or bundle audio.
+- Restored voices no longer overlap: starting a new restored voice stops the previous one.
+- Lowered the restored-emote duplicate cooldown from 0.30s to 0.07s so rapid repeats can restart sooner.
+
 ## 0.5.6-beta — 2026-10-12
 
 - Fixed "Interface action failed because of an AddOn" on `/train` and faction cries. Restored the working `C_ChatInfo.SendChatMessage` path and send the custom `/e` line immediately on the slash/keybind call stack instead of after `C_Timer.After`, which Forever treats as an automated chat action.
