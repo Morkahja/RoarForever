@@ -2,6 +2,32 @@
 
 Release notes for the standalone player voice-emote sound addon.
 
+## 0.5.6-beta — 2026-10-12
+
+- Fixed "Interface action failed because of an AddOn" on `/train` and faction cries. Restored the working `C_ChatInfo.SendChatMessage` path and send the custom `/e` line immediately on the slash/keybind call stack instead of after `C_Timer.After`, which Forever treats as an automated chat action.
+- Kept the 0.5.5 faction-cry fix: `/forthehorde` and `/forthealliance` still announce from the slash command even when `DoEmote` is a no-op.
+
+## 0.5.5-beta — 2026-10-12
+
+- Fixed faction-cry chat announcements so `/forthehorde` and `/forthealliance` send their distinctive `/e` line from the slash command even when `DoEmote` does nothing. A follow-up 0.5.6 fix restored the safe chat API path after `/train` broke.
+
+## 0.5.4-beta — 2026-10-12
+
+- Restores the missing `/forthehorde` and `/forthealliance` faction cries using the original race/sex-specific voice assets contained in the World of Warcraft Forever client.
+- Added `/forthealliance` (alias `/fta`) for Alliance characters, with the same announcement, multiplayer, group/raid, options, and `/rf test` support as `/forthehorde` / `/fth`.
+- Verified Alliance voices for Human, Dwarf, Gnome, and Night Elf (male and female). No Skyborne faction-cry line was found for either faction.
+- Shared faction-emote handling for both cries. Forever still has no native emote tokens, so the cheer animation may be missing until Blizzard wires them; the addon keeps calling `DoEmote("FORTHEHORDE")` and `DoEmote("FORTHEALLIANCE")` for forward compatibility.
+
+## 0.5.3-beta — 2026-10-12
+
+- Added `/forthehorde` (alias `/fth`) for Horde characters. Forever still has the race/sex “For the Horde!” voice files, but does not wire the emote, so Roar Forever plays them and sends a distinctive chat line other Roar Forever users can hear.
+- Verified Orc, Tauren, Troll, and Undead male/female FileDataIDs in the Forever client. No Skyborne for-horde line was found yet.
+- Forever’s EmotesText has no `FORTHEHORDE` token yet, so the native cheer animation may not play until Blizzard wires it. The addon keeps calling `DoEmote("FORTHEHORDE")` so a future client build can pick it up automatically.
+
+## 0.5.2-beta — 2026-10-11
+
+- Skyborne already have a client `/roar`. Roar Forever no longer double-plays roar for yourself or for Skyborne group members. Other races still get the addon roar there. Nearby non-grouped Skyborne roars are still restored.
+
 ## 0.5.1-beta — 2026-10-07
 
 - Stopped group-member `/train` from playing twice. Like the other non-roar voices, train is left to the game in a party or raid.

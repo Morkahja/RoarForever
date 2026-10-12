@@ -383,6 +383,31 @@ local voiceSounds = {
         SkyborneFemale = { 7744921 },
         SkyborneMale = { 7744513 },
     },
+    -- Faction-cry voices exist in the Forever CASC but are not wired through
+    -- EmotesText / EmotesTextSound on build 1.60. FileDataIDs verified via
+    -- wago.tools CASC for 1.60.1.70338. No Skyborne faction-cry lines found yet.
+    forthehorde = {
+        OrcFemale = { 1387393 },
+        OrcMale = { 1387394 },
+        TaurenFemale = { 1387399 },
+        TaurenMale = { 1502107 },
+        TrollFemale = { 1502159 },
+        TrollMale = { 1512807 },
+        UndeadFemale = { 1387400 },
+        UndeadMale = { 1387401 },
+    },
+    forthealliance = {
+        HumanFemale = { 1502108 },
+        HumanMale = { 1502109 },
+        DwarfFemale = { 1512964 },
+        DwarfMale = { 1512853 },
+        GnomeFemale = { 1387389 },
+        GnomeMale = { 1512970 },
+        NightElfFemale = { 1387392 },
+        -- Listed under pcdhnightelfmale in the community listfile, but this is
+        -- the non-DH Night Elf male "For the Alliance!" line and is present in Forever.
+        NightElfMale = { 1512798 },
+    },
 }
 
 voiceSounds.retreat = voiceSounds.flee
@@ -498,14 +523,51 @@ for _, entry in ipairs(RF.locale.templates) do
 end
 
 local TRAIN_LINE = "blows a train whistle. Choo choo!"
+
+-- Faction cries share slash/announce/detection logic. Sound tables stay separate.
+local factionEmotes = {
+    forthehorde = {
+        faction = "Horde",
+        token = "FORTHEHORDE",
+        altTokens = { HORDE = true },
+        line = "cheers for the Horde! For the Horde!",
+        slash = "/forthehorde",
+    },
+    forthealliance = {
+        faction = "Alliance",
+        token = "FORTHEALLIANCE",
+        altTokens = { ALLIANCE = true },
+        line = "cheers for the Alliance! For the Alliance!",
+        slash = "/forthealliance",
+    },
+}
+
+local factionEmoteByToken = {}
+for emoteName, info in pairs(factionEmotes) do
+    factionEmoteByToken[info.token] = emoteName
+    for alt in pairs(info.altTokens) do
+        factionEmoteByToken[alt] = emoteName
+    end
+end
+
+local function MatchesCustomEmoteLine(text, sender, line)
+    return text == line
+        or text == (sender or "") .. " " .. line
+        or text == (NormalizeName(sender) or "") .. " " .. line
+end
+
 local function DetectEmote(text, event, sender)
     if type(text) ~= "string" then return nil end
     text = NormalizeText(text)
     if event == "CHAT_MSG_EMOTE" then
-        -- Custom emotes are arbitrary prose. Accept only our exact train message.
-        if text == TRAIN_LINE or text == (sender or "") .. " " .. TRAIN_LINE
-            or text == (NormalizeName(sender) or "") .. " " .. TRAIN_LINE then
+        -- Custom emotes are arbitrary prose. Accept only exact addon messages.
+        if MatchesCustomEmoteLine(text, sender, TRAIN_LINE) then
             return "train"
+        end
+        for emoteName, info in pairs(factionEmotes) do
+            if MatchesCustomEmoteLine(text, sender, info.line) then
+                return emoteName
+            end
         end
         return nil
     end
@@ -665,6 +727,10 @@ local function IsLocalPlayer(sender, guid)
     return FindUnitBySender(sender) == "player"
 end
 
+local function IsSkyborneVoiceKey(voiceKey)
+    return type(voiceKey) == "string" and string.sub(voiceKey, 1, 8) == "Skyborne"
+end
+
 local function CanPlayForSender(sender, guid, emoteName)
     local senderKey = guid or NormalizeName(sender) or "unknown"
     local key = emoteName .. ":" .. senderKey
@@ -715,18 +781,37 @@ frame:SetScript("OnEvent", function(self, event, ...)
     end
 
     -- The client already plays normal voiced emotes for you, and for party
-    -- and raid members, including /train. Roar is still missing there, so
-    -- only /roar is restored for yourself and for group members. The custom
-    -- train chat line is still used for nearby players outside your group.
-    if emoteName ~= "roar" and (IsLocalPlayer(sender, guid) or IsGroupedSender(sender, guid)) then
+    -- and raid members, including /train. Most races still lack /roar there,
+    -- so only /roar is restored for yourself and for group members. Skyborne
+    -- already have a client roar, so leave that to the game too. Faction cries
+    -- are addon-restored for everyone except yourself (you already played from
+    -- the slash command), including party and raid, because Forever does not
+    -- wire those voices. Custom chat lines carry /train and faction cries.
+    local isSelf = IsLocalPlayer(sender, guid)
+    local isSelfOrGroup = isSelf or IsGroupedSender(sender, guid)
+    local isFactionCry = factionEmotes[emoteName] ~= nil
+
+    if isFactionCry then
+        if isSelf then
+            return
+        end
+    elseif emoteName ~= "roar" and isSelfOrGroup then
         return
+    end
+
+    local voiceKey = nil
+    if emoteName == "roar" and isSelfOrGroup then
+        voiceKey = GetSenderVoiceKey(sender, guid)
+        if IsSkyborneVoiceKey(voiceKey) then
+            return
+        end
     end
 
     if not CanPlayForSender(sender, guid, emoteName) then
         return
     end
 
-    local voiceKey = GetSenderVoiceKey(sender, guid)
+    voiceKey = voiceKey or GetSenderVoiceKey(sender, guid)
     if voiceKey then
         PlayEmoteByKey(emoteName, voiceKey)
     end
@@ -766,7 +851,7 @@ SlashCmdList.ROARFOREVER = function(msg)
 
         if not voiceSounds[testEmote] then
             print("Roar Forever: unknown test emote '" .. testEmote .. "'.")
-            print("Roar Forever: test options are roar, cheer, laugh, joke, moo, flee, retreat, welcome, yes, no, healme, rasp, flirt, oom, sigh, charge, cry, congrats, congratulate, followme, train, whistle.")
+            print("Roar Forever: test options are roar, cheer, laugh, joke, moo, flee, retreat, welcome, yes, no, healme, rasp, flirt, oom, sigh, charge, cry, congrats, congratulate, followme, train, whistle, forthehorde, forthealliance.")
             return
         end
 
@@ -814,11 +899,14 @@ SlashCmdList.ROARFOREVER = function(msg)
     print("Roar Forever: /rf on | /rf off | /rf test [emote] | /rf status | /rf id <FileDataID>")
 end
 
--- Forever never announces /train. Take over the slash command, play the real
--- train emote, then send a custom /e line other Roar Forever clients can hear.
-local lastTrainAnnounce = 0
+-- Forever never announces /train, and does not wire faction cries at all.
+-- Take over those slash commands, play what the client can, then send a custom
+-- /e line other Roar Forever clients can hear.
+local lastCustomAnnounce = {}
 
 local function SendEmoteLine(text)
+    -- Match the pre-0.5.5 train path: C_ChatInfo first. Preferring global
+    -- SendChatMessage caused "Interface action failed because of an AddOn".
     if C_ChatInfo and C_ChatInfo.SendChatMessage then
         C_ChatInfo.SendChatMessage(text, "EMOTE")
     elseif SendChatMessage then
@@ -826,30 +914,84 @@ local function SendEmoteLine(text)
     end
 end
 
-local function AnnounceTrain()
-    if not AddonEnabled() or not EmoteEnabled("train") or SettingsDB().announceTrain == false then
+local function CustomAnnounceEnabled()
+    return SettingsDB().announceTrain ~= false
+end
+
+local function AnnounceCustomLine(emoteName, line)
+    if not AddonEnabled() or not EmoteEnabled(emoteName) or not CustomAnnounceEnabled() then
         return
     end
 
     local now = GetTime()
-    if now - lastTrainAnnounce < 1 then
+    local last = lastCustomAnnounce[emoteName] or 0
+    if now - last < 1 then
         return
     end
 
-    lastTrainAnnounce = now
-    SendEmoteLine(TRAIN_LINE)
+    lastCustomAnnounce[emoteName] = now
+    SendEmoteLine(line)
 end
 
-local function AnnounceTrainSoon()
-    if C_Timer and C_Timer.After then
-        C_Timer.After(0, AnnounceTrain)
-    else
-        AnnounceTrain()
-    end
+local function AnnounceCustomLineSoon(emoteName, line)
+    -- Send immediately on the slash/keybind call stack. Deferring with
+    -- C_Timer.After breaks the hardware-event context and Forever then blocks
+    -- the emote chat with "Interface action failed because of an AddOn".
+    AnnounceCustomLine(emoteName, line)
 end
 
 local function IsTrainToken(emote)
     return type(emote) == "string" and string.upper(emote) == "TRAIN"
+end
+
+local function IsPlayerFaction(faction)
+    return UnitFactionGroup and UnitFactionGroup("player") == faction
+end
+
+local function PlayLocalFactionCry(emoteName)
+    local voiceKey = GetVoiceKeyForUnit("player")
+    if not voiceKey then
+        return false
+    end
+    local sounds = voiceSounds[emoteName] and voiceSounds[emoteName][voiceKey]
+    if not sounds or #sounds == 0 then
+        return false
+    end
+    local sender = UnitName and UnitName("player") or "player"
+    local guid = UnitGUID and UnitGUID("player") or nil
+    if not CanPlayForSender(sender, guid, emoteName) then
+        return false
+    end
+    return PlayEmoteByKey(emoteName, voiceKey)
+end
+
+local function HandleFactionCry(emoteName, fromDoEmote)
+    local info = factionEmotes[emoteName]
+    if not info then
+        return
+    end
+
+    if not IsPlayerFaction(info.faction) then
+        if not fromDoEmote then
+            print("Roar Forever: " .. info.slash .. " is only for " .. info.faction .. " characters.")
+        end
+        return
+    end
+
+    -- Forever 1.60 EmotesText has neither faction-cry token. Keep calling the
+    -- retail token so a future build can supply the native cheer animation
+    -- without an addon change. Do not fall back to CHEER: that would send the
+    -- wrong emote text and play the cheer voice on top of the faction cry.
+    -- Voice + custom /e are required regardless of whether DoEmote no-ops or
+    -- errors; the custom line is the only multiplayer signal Forever provides.
+    if not fromDoEmote and DoEmote then
+        pcall(DoEmote, info.token)
+    end
+
+    if AddonEnabled() and EmoteEnabled(emoteName) then
+        PlayLocalFactionCry(emoteName)
+    end
+    AnnounceCustomLineSoon(emoteName, info.line)
 end
 
 -- Slash commands are checked before built-in emote tokens, so this replaces
@@ -860,14 +1002,40 @@ SlashCmdList.ROARFOREVERTRAIN = function()
         DoEmote("TRAIN")
     end
 
-    AnnounceTrainSoon()
+    AnnounceCustomLineSoon("train", TRAIN_LINE)
+end
+
+SLASH_ROARFOREVERFTH1 = "/forthehorde"
+if not SlashCmdList.FTH then
+    SLASH_ROARFOREVERFTH2 = "/fth"
+end
+SlashCmdList.ROARFOREVERFTH = function()
+    HandleFactionCry("forthehorde", false)
+end
+
+SLASH_ROARFOREVERFTA1 = "/forthealliance"
+if not SlashCmdList.FTA then
+    SLASH_ROARFOREVERFTA2 = "/fta"
+end
+SlashCmdList.ROARFOREVERFTA = function()
+    HandleFactionCry("forthealliance", false)
 end
 
 if hooksecurefunc and DoEmote then
-    -- Bindings and other addons call DoEmote("TRAIN") without going through /train.
+    -- Bindings and other addons call DoEmote without going through our slashes.
     hooksecurefunc("DoEmote", function(emote)
         if IsTrainToken(emote) then
-            AnnounceTrainSoon()
+            AnnounceCustomLineSoon("train", TRAIN_LINE)
+            return
+        end
+
+        if type(emote) ~= "string" then
+            return
+        end
+
+        local emoteName = factionEmoteByToken[string.upper(emote)]
+        if emoteName then
+            HandleFactionCry(emoteName, true)
         end
     end)
 end
